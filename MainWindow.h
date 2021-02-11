@@ -1,8 +1,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QtCore/QDir>
+#include <QtWidgets/QStackedWidget>
+#include <QtWidgets/QTabBar>
+#include "HomeTab.h"
 #include "ui_MainWindow.h"
-#include "ImageViewer.h"
 
 
 class MainWindow : public QMainWindow, public Ui::MainWindow {
@@ -11,19 +14,24 @@ Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = nullptr);
 
+    QTabBar *tabBar;
+    QStackedWidget *stackedWidget;
+    HomeTab *homeTab;
     QDir fileLastPath;
 
-    void connectTab(ImageViewer *tab);
+    void connectTab(ImageView *tab);
+
+    void addTab(ImageView *tab);
+
+    bool loadFile(QString &path);
 
     void chooseFile();
 
-private slots:
+    void closeTab(int index);
 
-    void on_tabWidget_tabCloseRequested(int index);
+    void changeTab(int index);
 
-    void on_actionOpen_triggered();
-
-    void on_actionExit_triggered();
+    void moveTab(int from, int to);
 };
 
 #endif

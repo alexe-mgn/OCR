@@ -30,13 +30,16 @@ set(CMAKE_AUTORCC ON)
 
 
 # Targeting
-set(HEADERS MainWindow.h ImageViewer.h)
-set(SOURCES main.cpp MainWindow.cpp ImageViewer.cpp)
+set(SOURCES
+        main.cpp
+        MainWindow.cpp MainWindow.h
+        HomeTab.cpp HomeTab.h
+        ImageView.cpp ImageView.h)
 
 if (CMAKE_BUILD_TYPE MATCHES "Debug")
-    add_executable(${PROJECT_NAME} debug.h debug.cpp ${HEADERS} ${SOURCES})
+    add_executable(${PROJECT_NAME} debug.h debug.cpp ${SOURCES})
 else()
-    add_executable(${PROJECT_NAME} WIN32 ${HEADERS} ${SOURCES})
+    add_executable(${PROJECT_NAME} WIN32 ${SOURCES})
 endif()
 target_link_libraries(${PROJECT_NAME} ${QT_LIBS})
 

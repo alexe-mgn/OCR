@@ -8,7 +8,10 @@ ImageViewer::ImageViewer(QWidget *parent) : QMainWindow(parent) {
     const QStringList sp = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
     lastDirectory = sp.empty() ? QDir::current() : sp.last();
 
-    imageLabel->setScaledContents(true);
+    scrollArea->setStyleSheet("border: 2px solid green;");
+
+    imageLabel->setScaledContents(false);
+    imageLabel->setStyleSheet("border: 2px solid red;");
 
     connectActions();
     updateActions();
@@ -108,78 +111,3 @@ void ImageViewer::chooseFile() {
         if (loadFile(dialog.selectedFiles().first())) return;
     }
 }
-
-
-//ImageViewer::ImageViewer(QWidget *parent) : QMainWindow(parent) {
-//    setupUi(this);
-//    imageLabel->setBackgroundRole(QPalette::Base);
-//    imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-//    imageLabel->setScaledContents(true);
-//
-//    scrollArea->setBackgroundRole(QPalette::Dark);
-////    scrollArea->setVisible(false);
-//
-//    scaleFactor = 1.0;
-//
-//    connectActions();
-//
-//    resize(QGuiApplication::primaryScreen()->availableSize() * 3 / 5);
-//}
-
-//void ImageViewer::setImage(const QImage &newImage)
-//{
-//    image = newImage;
-//    imageLabel->setPixmap(QPixmap::fromImage(image));
-////! [4]
-//    scaleFactor = 1.0;
-//
-//    scrollArea->setVisible(true);
-//    actionFitToWindow->setEnabled(true);
-//    updateActions();
-//
-//    if (!actionFitToWindow->isChecked())
-//        imageLabel->adjustSize();
-//}
-//
-//void ImageViewer::zoomIn() {
-//    scaleImage(1.25);
-//}
-//
-//void ImageViewer::zoomOut() {
-//    scaleImage(0.8);
-//}
-//
-//void ImageViewer::normalSize() {
-//    imageLabel->adjustSize();
-//    scaleFactor = 1.0;
-//}
-//
-//void ImageViewer::fitToWindow() {
-//    bool fitToWindow = actionFitToWindow->isChecked();
-//    scrollArea->setWidgetResizable(fitToWindow);
-//    if (!fitToWindow)
-//        normalSize();
-//    updateActions();
-//}
-//
-//void ImageViewer::updateActions() {
-//    actionZoomIn->setEnabled(!actionFitToWindow->isChecked());
-//    actionZoomOut->setEnabled(!actionFitToWindow->isChecked());
-//    actionNormalSize->setEnabled(!actionFitToWindow->isChecked());
-//}
-//
-//void ImageViewer::scaleImage(double factor) {
-//    scaleFactor *= factor;
-//    imageLabel->resize(scaleFactor * imageLabel->pixmap()->size());
-//
-//    adjustScrollBar(scrollArea->horizontalScrollBar(), factor);
-//    adjustScrollBar(scrollArea->verticalScrollBar(), factor);
-//
-//    actionZoomIn->setEnabled(scaleFactor < 3.0);
-//    actionZoomOut->setEnabled(scaleFactor > 0.333);
-//}
-//
-//void ImageViewer::adjustScrollBar(QScrollBar *scrollBar, double factor) {
-//    scrollBar->setValue(int(factor * scrollBar->value()
-//                            + ((factor - 1) * scrollBar->pageStep() / 2)));
-//}

@@ -3,14 +3,15 @@
 
 #include "ui_ImageViewer.h"
 
-#include <QtWidgets/QMessageBox>
 #include <QtWidgets/QFileDialog>
-#include <QtGui/QScreen>
-#include <QtGui/QImageReader>
+#include <QtWidgets/QMessageBox>
 #include <QtGui/QImageWriter>
-#include <QtCore/QString>
-#include <QtCore/QDir>
+#include <QtGui/QImageReader>
+#include <QtGui/QScreen>
 #include <QtCore/QStandardPaths>
+#include <QtCore/QDir>
+#include <QtCore/QString>
+
 
 class ImageViewer : public QMainWindow, public Ui::ImageViewer {
 Q_OBJECT
