@@ -15,7 +15,11 @@ Q_OBJECT
 public:
     explicit ImageView(QWidget *parent = nullptr);
 
+    ~ImageView() override;
+
     void reset();
+
+    bool isSaveAvailable();
 
     void setImage(QImage &newImage);
 

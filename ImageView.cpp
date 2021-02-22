@@ -10,12 +10,20 @@ ImageView::ImageView(QWidget *parent) : QGraphicsView(parent) {
     setResizeAnchor(ViewportAnchor::AnchorViewCenter);
     setDragMode(DragMode::ScrollHandDrag);
 
-    setImage(*(new QImage("C:\\Users\\admin\\Desktop\\котик.jpg", "jpg")));
+//    setImage(*(new QImage("C:\\Users\\admin\\Desktop\\котик.jpg", "jpg")));
+}
+
+ImageView::~ImageView() {
+    delete image;
 }
 
 void ImageView::reset() {
     resetTransform();
     scaleFactor = 1;
+}
+
+bool ImageView::isSaveAvailable() {
+    return (bool) image;
 }
 
 void ImageView::setImage(QImage &newImage) {

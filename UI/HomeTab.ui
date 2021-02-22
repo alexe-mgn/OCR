@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>HomeTab</string>
   </property>
-  <layout class="QHBoxLayout" name="mainLayout" stretch="2,0,1">
+  <layout class="QHBoxLayout" name="homeLayout" stretch="2,0,1">
    <item>
     <widget class="QGroupBox" name="menuGroupBox">
      <property name="title">

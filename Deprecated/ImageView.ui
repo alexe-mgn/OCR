@@ -14,7 +14,7 @@
    <string>ImageViewer</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QScrollArea" name="scrollArea">
       <property name="widgetResizable">

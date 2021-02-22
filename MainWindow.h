@@ -15,13 +15,13 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
 
     QTabBar *tabBar;
-    QStackedWidget *stackedWidget;
+    QStackedWidget *stack;
     HomeTab *homeTab;
     QDir fileLastPath;
 
-    void connectTab(ImageView *tab);
+    void connectTab(Tab *tab);
 
-    void addTab(ImageView *tab);
+    void addTab(Tab *tab);
 
     bool loadFile(QString &path);
 
@@ -32,6 +32,9 @@ public:
     void changeTab(int index);
 
     void moveTab(int from, int to);
+
+protected:
+    void uiTabMoved(int from, int to);
 };
 
 #endif

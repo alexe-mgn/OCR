@@ -1,4 +1,4 @@
-#include "ImageView.h"
+#include "ImageViewer.h"
 #include "MainWindow.h"
 
 #include <QtCore/QStandardPaths>
@@ -9,30 +9,30 @@
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QFileDialog>
 
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     setupUi(this);
 
     // tabBar
     tabBar = new QTabBar();
-    centralWidget()->layout()->addWidget(tabBar);
+    centralLayout->insertWidget(centralLayout->indexOf(stackContainer), tabBar);
+    tabBar->setExpanding(false);
     tabBar->setTabsClosable(true);
     tabBar->setMovable(true);
     connect(tabBar, &QTabBar::tabCloseRequested, this, &MainWindow::closeTab);
     connect(tabBar, &QTabBar::currentChanged, this, &MainWindow::changeTab);
-    connect(tabBar, &QTabBar::tabMoved, this, &MainWindow::moveTab);
+    connect(tabBar, &QTabBar::tabMoved, this, &MainWindow::uiTabMoved);
 
-    // stackedWidget
-    stackedWidget = new QStackedWidget();
-    centralWidget()->layout()->addWidget(stackedWidget);
+    // stack
+    stack = new QStackedWidget();
+    stackContainer->setCentralWidget(stack);
 
     // homeTab
     homeTab = new HomeTab();
+    addTab(homeTab);
     //  tab
-    tabBar->addTab("Home");
     tabBar->tabButton(0, QTabBar::RightSide)->deleteLater();
     tabBar->setTabButton(0, QTabBar::RightSide, nullptr);
-    //  stack
-    stackedWidget->addWidget(homeTab);
     //  connections
     connect(homeTab->openButton, &QPushButton::clicked, actionOpen, &QAction::trigger);
     connect(homeTab->exitButton, &QPushButton::clicked, actionExit, &QAction::trigger);
@@ -49,15 +49,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     }
 }
 
-void MainWindow::connectTab(ImageView *tab) {
+void MainWindow::connectTab(Tab *tab) {
     tabBar->addTab(tab->windowTitle());
-    stackedWidget->addWidget(tab);
+    stack->addWidget(tab);
 }
 
-void MainWindow::addTab(ImageView *tab) {
+void MainWindow::addTab(Tab *tab) {
     connectTab(tab);
-    stackedWidget->setCurrentWidget(tab);
-    tabBar->setCurrentIndex(stackedWidget->currentIndex());
+    stack->setCurrentWidget(tab);
+    tabBar->setCurrentIndex(stack->currentIndex());
 }
 
 bool MainWindow::loadFile(QString &path) {
@@ -74,10 +74,10 @@ bool MainWindow::loadFile(QString &path) {
         msg.exec();
         return false;
     } else {
-        auto imageView = new ImageView();
-        imageView->setImage(image);
-        imageView->setWindowTitle(QFileInfo(path).fileName());
-        addTab(imageView);
+        auto imageViewer = new ImageViewer();
+        imageViewer->setImage(image);
+        imageViewer->setWindowTitle(QFileInfo(path).fileName());
+        addTab(imageViewer);
         return true;
     }
 }
@@ -116,18 +116,26 @@ void MainWindow::chooseFile() {
 }
 
 void MainWindow::changeTab(int index) {
-    stackedWidget->setCurrentIndex(index);
+    tabBar->setCurrentIndex(index);
+    stack->setCurrentIndex(index);
 }
 
 void MainWindow::closeTab(int index) {
     tabBar->removeTab(index);
-    QWidget *w = stackedWidget->widget(index);
-    stackedWidget->removeWidget(w);
+    QWidget *w = stack->widget(index);
+    stack->removeWidget(w);
     w->deleteLater();
 }
 
 void MainWindow::moveTab(int from, int to) {
-    QWidget *w = stackedWidget->widget(from);
-    stackedWidget->removeWidget(w);
-    stackedWidget->insertWidget(to, w);
+    tabBar->moveTab(from, to);
+    QWidget *w = stack->widget(from);
+    stack->removeWidget(w);
+    stack->insertWidget(to, w);
+}
+
+void MainWindow::uiTabMoved(int from, int to) {
+    QWidget *w = stack->widget(from);
+    stack->removeWidget(w);
+    stack->insertWidget(to, w);
 }

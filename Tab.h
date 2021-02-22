@@ -1,9 +1,11 @@
 #ifndef TAB_H
 #define TAB_H
 
-#include <QtWidgets/QWidget>
+class Tab : public virtual QWidget {
+public:
+    explicit Tab(QWidget *parent = nullptr) : QWidget(parent) {}
 
-class Tab : public QWidget {
+    virtual bool isSaveAvailable() = 0;
 };
 
 

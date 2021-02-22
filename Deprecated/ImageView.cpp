@@ -1,14 +1,14 @@
 #include <QtGui/QPaintEvent>
 #include <QtGui/QResizeEvent>
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QScrollBar>
 
 #include "ImageView.h"
 
 
 ImageView::ImageView(QWidget *parent) : QAbstractScrollArea(parent) {
-    viewport()->setLayout(new QHBoxLayout());
+    viewport()->setLayout(new QVBoxLayout());
     viewport()->layout()->setContentsMargins(0, 0, 0, 0);
     viewport()->layout()->addWidget(&label);
 

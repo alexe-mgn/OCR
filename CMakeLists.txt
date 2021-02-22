@@ -33,7 +33,9 @@ set(CMAKE_AUTORCC ON)
 set(SOURCES
         main.cpp
         MainWindow.cpp MainWindow.h
+        Tab.h
         HomeTab.cpp HomeTab.h
+        ImageViewer.h ImageViewer.cpp
         ImageView.cpp ImageView.h)
 
 if (CMAKE_BUILD_TYPE MATCHES "Debug")

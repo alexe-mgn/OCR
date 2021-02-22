@@ -14,22 +14,38 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="mainWindowContents">
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <property name="spacing">
-     <number>0</number>
-    </property>
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
+   <layout class="QVBoxLayout" name="centralLayout">
+    <item>
+     <widget class="QMainWindow" name="stackContainer">
+      <widget class="QDockWidget" name="dockWidget">
+       <property name="windowTitle">
+        <string>1</string>
+       </property>
+       <attribute name="dockWidgetArea">
+        <number>1</number>
+       </attribute>
+       <widget class="QWidget" name="dockWidgetContents"/>
+      </widget>
+      <widget class="QDockWidget" name="dockWidget_2">
+       <property name="windowTitle">
+        <string>2</string>
+       </property>
+       <attribute name="dockWidgetArea">
+        <number>2</number>
+       </attribute>
+       <widget class="QWidget" name="dockWidgetContents_2"/>
+      </widget>
+      <widget class="QDockWidget" name="dockWidget_3">
+       <property name="windowTitle">
+        <string>3</string>
+       </property>
+       <attribute name="dockWidgetArea">
+        <number>2</number>
+       </attribute>
+       <widget class="QWidget" name="dockWidgetContents_3"/>
+      </widget>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
