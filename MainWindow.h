@@ -1,9 +1,16 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QtCore/QList>
 #include <QtCore/QDir>
+
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QMainWindow>
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QTabBar>
+
+#include "Tab.h"
+#include "DockPanels.h"
 #include "HomeTab.h"
 #include "ui_MainWindow.h"
 
@@ -17,6 +24,8 @@ public:
     QTabBar *tabBar;
     QStackedWidget *stack;
     HomeTab *homeTab;
+    QList<PanelDockWidget *> panelDockWidgets;
+
     QDir fileLastPath;
 
     void connectTab(Tab *tab);
@@ -29,7 +38,7 @@ public:
 
     void closeTab(int index);
 
-    void changeTab(int index);
+    void setCurrentIndex(int index);
 
     void moveTab(int from, int to);
 

@@ -1,5 +1,3 @@
-#include <QtWidgets/QScrollBar>
-
 #include "ImageView.h"
 
 
@@ -15,6 +13,9 @@ ImageView::ImageView(QWidget *parent) : QGraphicsView(parent) {
 
 ImageView::~ImageView() {
     delete image;
+    QGraphicsScene *sc = scene();
+    setScene(nullptr);
+    sc->deleteLater();
 }
 
 void ImageView::reset() {
@@ -66,5 +67,4 @@ void ImageView::wheelEvent(QWheelEvent *event) {
 
 void ImageView::keyPressEvent(QKeyEvent *event) {
 //    QGraphicsView::keyPressEvent(event);
-    int arrowScrollValue = 10;
 }

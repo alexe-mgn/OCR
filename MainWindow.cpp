@@ -1,33 +1,49 @@
-#include "ImageViewer.h"
-#include "MainWindow.h"
-
+#include <QtCore/QByteArray>
+#include <QtCore/QStringList>
+#include <QtCore/QFileInfo>
 #include <QtCore/QStandardPaths>
 #include <QtCore/QMimeType>
 #include <QtCore/QMimeDatabase>
+
+#include <QtGui/QImage>
 #include <QtGui/QImageReader>
-#include <QtWidgets/QTabBar>
+
+#include <QtWidgets/QAction>
+#include <QtWidgets/QDialog>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QFileDialog>
+
+#include "ImageViewer.h"
+#include "MainWindow.h"
 
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     setupUi(this);
 
-    // tabBar
+    // Tab bar
     tabBar = new QTabBar();
     centralLayout->insertWidget(centralLayout->indexOf(stackContainer), tabBar);
     tabBar->setExpanding(false);
     tabBar->setTabsClosable(true);
     tabBar->setMovable(true);
     connect(tabBar, &QTabBar::tabCloseRequested, this, &MainWindow::closeTab);
-    connect(tabBar, &QTabBar::currentChanged, this, &MainWindow::changeTab);
+    connect(tabBar, &QTabBar::currentChanged, this, &MainWindow::setCurrentIndex);
     connect(tabBar, &QTabBar::tabMoved, this, &MainWindow::uiTabMoved);
 
-    // stack
+    // Stack
     stack = new QStackedWidget();
     stackContainer->setCentralWidget(stack);
 
-    // homeTab
+    // Dock panels
+    panelDockWidgets = QList<PanelDockWidget *>{dockWidget,
+                                                dockWidget_2,
+                                                dockWidget_3};
+    QList<PanelContainer *> containers{stackedWidget, stackedWidget_2, stackedWidget_3};
+    auto dock = panelDockWidgets.begin();
+    for (auto container = containers.begin(); dock != panelDockWidgets.end(); ++dock, ++container)
+        (*dock)->setContainer(*container);
+
+    // Home tab
     homeTab = new HomeTab();
     addTab(homeTab);
     //  tab
@@ -52,6 +68,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 void MainWindow::connectTab(Tab *tab) {
     tabBar->addTab(tab->windowTitle());
     stack->addWidget(tab);
+    auto widgets = tab->getPanels();
+    auto dock = panelDockWidgets.begin();
+    for (auto i = widgets.begin(); i != widgets.end(); ++dock, ++i)
+        if (*i)
+            (*dock)->connectTab(tab, *i);
 }
 
 void MainWindow::addTab(Tab *tab) {
@@ -115,15 +136,20 @@ void MainWindow::chooseFile() {
     }
 }
 
-void MainWindow::changeTab(int index) {
+void MainWindow::setCurrentIndex(int index) {
     tabBar->setCurrentIndex(index);
     stack->setCurrentIndex(index);
+    for (auto &dock : panelDockWidgets)
+        dock->setCurrentTab(dynamic_cast<Tab *>(stack->currentWidget()));
 }
 
 void MainWindow::closeTab(int index) {
     tabBar->removeTab(index);
     QWidget *w = stack->widget(index);
     stack->removeWidget(w);
+    if (auto tab = dynamic_cast<Tab *>(w))
+        for (auto &dock : panelDockWidgets)
+            dock->removeTab(tab);
     w->deleteLater();
 }
 

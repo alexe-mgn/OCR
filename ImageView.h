@@ -1,12 +1,14 @@
 #ifndef GRAPHICSIMAGEVIEW_H
 #define GRAPHICSIMAGEVIEW_H
 
-
+#include <QtGui/QKeyEvent>
 #include <QtGui/QWheelEvent>
 #include <QtGui/QImage>
+
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QGraphicsPixmapItem>
 #include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QGraphicsView>
-#include <QtWidgets/QGraphicsPixmapItem>
 
 
 class ImageView : public QGraphicsView {

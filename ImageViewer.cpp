@@ -9,9 +9,27 @@ ImageViewer::ImageViewer(QWidget *parent) : Tab(parent) {
     imageView = new ImageView();
     setLayout(new QVBoxLayout());
     layout()->addWidget(imageView);
+
+    infoPanel = new InfoPanel();
+    dataListPanel = new DataListPanel();
+    dataViewPanel = new QWidget();
 }
 
-bool ImageViewer::isSaveAvailable() { return imageView && imageView->isSaveAvailable(); }
+#include <QtDebug>
+ImageViewer::~ImageViewer() {
+//    infoPanel->deleteLater();
+//    dataListPanel->deleteLater();
+//    dataViewPanel->deleteLater();
+//    imageView->deleteLater();
+}
+
+QList<QWidget *> ImageViewer::getPanels() {
+    return QList<QWidget *>{infoPanel, dataListPanel, dataViewPanel};
+}
+
+bool ImageViewer::isSaveAvailable() {
+    return imageView && imageView->isSaveAvailable();
+}
 
 void ImageViewer::setImage(QImage &newImage) {
     imageView->setImage(newImage);
