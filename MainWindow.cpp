@@ -81,27 +81,27 @@ void MainWindow::addTab(Tab *tab) {
     tabBar->setCurrentIndex(stack->currentIndex());
 }
 
-bool MainWindow::loadFile(QString &path) {
-    QImageReader reader(path);
-    reader.setAutoTransform(true);
-    QImage image = reader.read();
-    if (image.isNull()) {
-        QMessageBox msg(QMessageBox::Warning,
-                        tr("Input error"),
-                        tr("Cannot load %1").arg(QDir::toNativeSeparators(path)),
-                        QMessageBox::StandardButton::Abort,
-                        this);
-        msg.setDetailedText(reader.errorString());
-        msg.exec();
-        return false;
-    } else {
-        auto imageViewer = new ImageViewer();
-        imageViewer->setImage(image);
-        imageViewer->setWindowTitle(QFileInfo(path).fileName());
-        addTab(imageViewer);
-        return true;
-    }
-}
+//bool MainWindow::loadFile(const QString &path) {
+//    QImageReader reader(path);
+//    reader.setAutoTransform(true);
+//    QImage image = reader.read();
+//    if (image.isNull()) {
+//        QMessageBox msg(QMessageBox::Warning,
+//                        tr("Input error"),
+//                        tr("Cannot load %1").arg(QDir::toNativeSeparators(path)),
+//                        QMessageBox::StandardButton::Abort,
+//                        this);
+//        msg.setDetailedText(reader.errorString());
+//        msg.exec();
+//        return false;
+//    } else {
+//        auto imageViewer = new ImageViewer();
+//        imageViewer->setImage(image);
+//        imageViewer->setWindowTitle(QFileInfo(path).fileName());
+//        addTab(imageViewer);
+//        return true;
+//    }
+//}
 
 void MainWindow::chooseFile() {
     QFileDialog dialog(this, tr("Choose image"));
@@ -131,8 +131,10 @@ void MainWindow::chooseFile() {
 
     while (dialog.exec() == QDialog::Accepted) {
         fileLastPath = dialog.directory();
-        if (loadFile(dialog.selectedFiles().first()))
+        if (auto imageViewer = ImageViewer::loadFile(dialog.selectedFiles().first())) {
+            addTab(imageViewer);
             return;
+        }
     }
 }
 

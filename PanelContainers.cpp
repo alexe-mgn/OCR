@@ -1,4 +1,4 @@
-#include "DockPanels.h"
+#include "PanelContainers.h"
 
 
 PanelContainer::PanelContainer(QWidget *parent) : QStackedWidget(parent) {
@@ -28,6 +28,7 @@ bool PanelContainer::setCurrentTab(Tab *newTab) {
     if (widget) {
         currentTab_ = newTab;
         setCurrentWidget(widget);
+        setWindowTitle(widget->windowTitle());
         return true;
     } else
         return false;
@@ -54,6 +55,10 @@ PanelDockWidget::PanelDockWidget(QWidget *parent,
     setContentsMargins(0, 0, 0, 0);
 }
 
+PanelContainer *PanelDockWidget::container() {
+    return container_;
+}
+
 void PanelDockWidget::setContainer(PanelContainer *newContainer) {
     if (container_) {
         auto tws = container_->tabWidgets();
@@ -65,10 +70,6 @@ void PanelDockWidget::setContainer(PanelContainer *newContainer) {
     container_ = newContainer;
 }
 
-PanelContainer *PanelDockWidget::container() {
-    return container_;
-}
-
 void PanelDockWidget::connectTab(Tab *tab, QWidget *widget) {
     container_->connectTab(tab, widget);
 }
@@ -77,6 +78,7 @@ bool PanelDockWidget::setCurrentTab(Tab *newTab) {
     bool haveTab = container_->setCurrentTab(newTab);
     if (haveTab) {
         show();
+        setWindowTitle(container_->windowTitle());
         return true;
     } else {
         hide();

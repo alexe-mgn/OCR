@@ -5,26 +5,71 @@
 
 #include <QtWidgets/QWidget>
 
+#include "TextData.h"
+#include "ToolPanels.h"
 #include "ImageView.h"
 #include "Tab.h"
-#include "ui_InfoPanel.h"
-#include "ui_DataListPanel.h"
 
 
-class InfoPanel : public QWidget, public Ui::InfoPanel {
+class ImageViewer;
+
+class IVInfoPanel : public InfoPanel {
+Q_OBJECT
+
 public:
-    explicit InfoPanel(QWidget *parent = nullptr) : QWidget(parent) { setupUi(this); }
+    explicit IVInfoPanel(ImageViewer *viewerTab);
+
+    void refresh() override;
+
+protected:
+    ImageViewer *imageViewer_;
+};
+////////////////////
+
+
+class IVDataListPanel : public DataListPanel {
+Q_OBJECT
+
+public:
+    explicit IVDataListPanel(ImageViewer *viewerTab);
+
+protected:
+    ImageViewer *imageViewer_;
 };
 
-class DataListPanel : public QWidget, public Ui::DataListPanel {
+
+////////////////////
+
+
+class IVDataViewPanel : public DataViewPanel {
+Q_OBJECT
+
 public:
-    explicit DataListPanel(QWidget *parent = nullptr) : QWidget(parent) { setupUi(this); }
+    explicit IVDataViewPanel(ImageViewer *viewerTab);
+
+    void removeItem() override;
+
+    void itemUpdated() override;
+
+    void refreshRanges() override;
+
+    TextItem *createItem() override;
+
+
+private:
+    ImageViewer *imageViewer_ = nullptr;
 };
+
+
+////////////////////
+
 
 class ImageViewer : public Tab {
 Q_OBJECT
 
 public:
+    static ImageViewer *loadFile(const QString &path);
+
     explicit ImageViewer(QWidget *parent = nullptr);
 
     ~ImageViewer() override;
@@ -33,14 +78,37 @@ public:
 
     bool isSaveAvailable() override;
 
+    void clear() override;
 
-    void setImage(QImage &newImage);
+    bool isClearAvailable() override;
+
+    bool hasImage();
+
+    QRect imageRect();
+
+    void setImage(const QImage &newImage);
+
+    QString fileInfo();
+
+    void setFileInfo(const QString &path);
+
+    void addItem(TextItem *textItem);
+
+    void refreshItem(TextItem *textItem);
+
+    void removeItem(TextItem *textItem);
+
+    int itemsCount();
 
 protected:
     ImageView *imageView;
-    InfoPanel *infoPanel;
-    DataListPanel *dataListPanel;
-    QWidget *dataViewPanel;
+    QList<TextItem *> items_;
+
+    IVInfoPanel *infoPanel;
+    IVDataListPanel *dataListPanel;
+    IVDataViewPanel *dataViewPanel;
+
+    QString filePath;
 };
 
 

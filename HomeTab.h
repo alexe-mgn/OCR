@@ -14,10 +14,6 @@ Q_OBJECT
 
 public:
     explicit HomeTab(QWidget *parent = nullptr);
-
-    QList<QWidget *> getPanels() override;
-
-    bool isSaveAvailable() override;
 };
 
 

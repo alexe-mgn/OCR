@@ -9,8 +9,8 @@
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QTabBar>
 
+#include "PanelContainers.h"
 #include "Tab.h"
-#include "DockPanels.h"
 #include "HomeTab.h"
 #include "ui_MainWindow.h"
 
@@ -32,7 +32,7 @@ public:
 
     void addTab(Tab *tab);
 
-    bool loadFile(QString &path);
+//    bool loadFile(const QString &path);
 
     void chooseFile();
 

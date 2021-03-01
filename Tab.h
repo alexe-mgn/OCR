@@ -10,9 +10,13 @@ class Tab : public virtual QWidget {
 public:
     explicit Tab(QWidget *parent = nullptr) : QWidget(parent) {}
 
-    virtual QList<QWidget *> getPanels() = 0;
+    virtual QList<QWidget *> getPanels() { return QList<QWidget *>(); }
 
-    virtual bool isSaveAvailable() = 0;
+    virtual bool isSaveAvailable() { return false; }
+
+    virtual void clear() {};
+
+    virtual bool isClearAvailable() { return false; };
 };
 
 

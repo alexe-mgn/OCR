@@ -1,5 +1,5 @@
-#ifndef DOCKPANELS_H
-#define DOCKPANELS_H
+#ifndef PANELCONTAINERS_H
+#define PANELCONTAINERS_H
 
 #include <QtCore/QList>
 #include <QtCore/QMap>
@@ -45,10 +45,9 @@ public:
     explicit PanelDockWidget(QWidget *parent = nullptr,
                              PanelContainer *container = nullptr);
 
+    PanelContainer *container();
 
     void setContainer(PanelContainer *newContainer);
-
-    PanelContainer *container();
 
     void connectTab(Tab *tab, QWidget *widget);
 
@@ -60,4 +59,4 @@ protected:
     PanelContainer *container_ = nullptr;
 };
 
-#endif //DOCKPANELS_H
+#endif //PANELCONTAINERS_H

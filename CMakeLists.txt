@@ -34,18 +34,21 @@ set(SOURCES
         main.cpp
         MainWindow.cpp MainWindow.h
 
+        PanelContainers.cpp PanelContainers.h
         Tab.h
+        ToolPanels.cpp ToolPanels.cpp
+
         HomeTab.cpp HomeTab.h
-        ImageViewer.h ImageViewer.cpp
+        ImageViewer.cpp ImageViewer.h
         ImageView.cpp ImageView.h
 
-        DockPanels.cpp DockPanels.h)
+        TextData.cpp TextData.h)
 
-#if (CMAKE_BUILD_TYPE MATCHES "Debug")
-#    add_executable(${PROJECT_NAME} debug.h debug.cpp ${SOURCES})
-#else()
+if (CMAKE_BUILD_TYPE MATCHES "Debug")
+    add_executable(${PROJECT_NAME} Debug.h ${SOURCES})
+else()
     add_executable(${PROJECT_NAME} WIN32 ${SOURCES})
-#endif()
+endif()
 target_link_libraries(${PROJECT_NAME} ${QT_LIBS})
 
 

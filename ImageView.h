@@ -21,9 +21,13 @@ public:
 
     void reset();
 
-    bool isSaveAvailable();
+    bool isSaveAvailable() { return (bool) image_; };
 
-    void setImage(QImage &newImage);
+    bool hasImage() { return (bool) image_; };
+
+    void setImage(const QImage &newImage);
+
+    QRect imageRect() { return QRect(QPoint(0, 0), pixmapItem.boundingRect().size().toSize()); }
 
     void resetScale();
 
@@ -36,7 +40,7 @@ public:
     QGraphicsPixmapItem pixmapItem;
 
 protected:
-    QImage *image = nullptr;
+    QImage *image_ = nullptr;
     double scaleFactor = 1;
 
     void wheelEvent(QWheelEvent *event) override;

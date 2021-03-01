@@ -12,7 +12,7 @@ ImageView::ImageView(QWidget *parent) : QGraphicsView(parent) {
 }
 
 ImageView::~ImageView() {
-    delete image;
+    delete image_;
     QGraphicsScene *sc = scene();
     setScene(nullptr);
     sc->deleteLater();
@@ -23,14 +23,10 @@ void ImageView::reset() {
     scaleFactor = 1;
 }
 
-bool ImageView::isSaveAvailable() {
-    return (bool) image;
-}
-
-void ImageView::setImage(QImage &newImage) {
-    delete image;
-    image = new QImage(newImage);
-    pixmapItem.setPixmap(QPixmap::fromImage(*image));
+void ImageView::setImage(const QImage &newImage) {
+    delete image_;
+    image_ = new QImage(newImage);
+    pixmapItem.setPixmap(QPixmap::fromImage(*image_));
     reset();
     setSceneRect(pixmapItem.sceneBoundingRect());
 }
