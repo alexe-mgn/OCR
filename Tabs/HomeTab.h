@@ -13,7 +13,9 @@ class HomeTab : public Tab, public Ui::HomeTab {
 Q_OBJECT
 
 public:
-    explicit HomeTab(QWidget *parent = nullptr);
+    explicit HomeTab(QWidget *parent = nullptr) { setupUi(this); };
+
+    ~HomeTab() override {};
 };
 
 

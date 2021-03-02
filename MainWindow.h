@@ -9,9 +9,9 @@
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QTabBar>
 
-#include "PanelContainers.h"
-#include "Tab.h"
-#include "HomeTab.h"
+#include "Panels/PanelContainers.h"
+#include "Tabs/Tab.h"
+#include "Tabs/HomeTab.h"
 #include "ui_MainWindow.h"
 
 

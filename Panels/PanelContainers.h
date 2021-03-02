@@ -8,7 +8,7 @@
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QDockWidget>
 
-#include "Tab.h"
+#include "Tabs/Tab.h"
 
 
 class PanelContainer : public QStackedWidget {

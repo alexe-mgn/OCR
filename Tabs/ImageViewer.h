@@ -6,7 +6,9 @@
 #include <QtWidgets/QWidget>
 
 #include "TextData.h"
-#include "ToolPanels.h"
+#include "Panels/InfoPanel.h"
+#include "Panels/DataListPanel.h"
+#include "Panels/DataViewPanel.h"
 #include "ImageView.h"
 #include "Tab.h"
 
@@ -33,6 +35,12 @@ Q_OBJECT
 public:
     explicit IVDataListPanel(ImageViewer *viewerTab);
 
+public slots:
+
+    virtual void selectItem(TextItem *textItem) {}
+
+    TextItem *createItem() override;
+
 protected:
     ImageViewer *imageViewer_;
 };
@@ -47,14 +55,9 @@ Q_OBJECT
 public:
     explicit IVDataViewPanel(ImageViewer *viewerTab);
 
-    void removeItem() override;
-
-    void itemUpdated() override;
+public slots:
 
     void refreshRanges() override;
-
-    TextItem *createItem() override;
-
 
 private:
     ImageViewer *imageViewer_ = nullptr;
@@ -78,7 +81,6 @@ public:
 
     bool isSaveAvailable() override;
 
-    void clear() override;
 
     bool isClearAvailable() override;
 
@@ -86,27 +88,33 @@ public:
 
     QRect imageRect();
 
-    void setImage(const QImage &newImage);
-
     QString fileInfo();
 
-    void setFileInfo(const QString &path);
+    int itemsCount();
+
+public slots:
 
     void addItem(TextItem *textItem);
+
+    void selectItem(TextItem *textItem);
 
     void refreshItem(TextItem *textItem);
 
     void removeItem(TextItem *textItem);
 
-    int itemsCount();
+    void clear() override;
 
-protected:
-    ImageView *imageView;
-    QList<TextItem *> items_;
+    void setImage(const QImage &newImage);
 
+    void setFileInfo(const QString &path);
+
+public:
     IVInfoPanel *infoPanel;
     IVDataListPanel *dataListPanel;
     IVDataViewPanel *dataViewPanel;
+protected:
+    ImageView *imageView;
+    QList<TextItem *> items_;
 
     QString filePath;
 };

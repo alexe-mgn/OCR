@@ -13,7 +13,7 @@
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QFileDialog>
 
-#include "ImageViewer.h"
+#include "Tabs/ImageViewer.h"
 #include "MainWindow.h"
 
 

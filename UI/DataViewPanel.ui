@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>568</width>
+    <height>490</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -110,20 +110,17 @@
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="1" column="1">
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
+     <item row="0" column="2">
+      <widget class="QToolButton" name="creationButton">
+       <property name="enabled">
+        <bool>false</bool>
        </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
+       <property name="text">
+        <string>Delete</string>
        </property>
-      </spacer>
+      </widget>
      </item>
-     <item row="0" column="0">
+     <item row="0" column="1">
       <spacer name="horizontalSpacer_3">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -136,17 +133,30 @@
        </property>
       </spacer>
      </item>
-     <item row="0" column="1">
-      <widget class="QToolButton" name="deleteButton">
+     <item row="0" column="0">
+      <widget class="QToolButton" name="saveButton">
        <property name="enabled">
         <bool>false</bool>
        </property>
        <property name="text">
-        <string>Delete</string>
+        <string>Save</string>
        </property>
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>

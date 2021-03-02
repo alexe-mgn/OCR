@@ -6,7 +6,7 @@
 #include <QtWidgets/QWidget>
 
 
-class Tab : public virtual QWidget {
+class Tab : public QWidget {
 public:
     explicit Tab(QWidget *parent = nullptr) : QWidget(parent) {}
 
@@ -14,9 +14,11 @@ public:
 
     virtual bool isSaveAvailable() { return false; }
 
-    virtual void clear() {};
-
     virtual bool isClearAvailable() { return false; };
+
+public slots:
+
+    virtual void clear() {};
 };
 
 
