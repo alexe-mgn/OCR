@@ -2,6 +2,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
 
+#include <QtGui/QClipboard>
 #include <QtGui/QImageReader>
 
 #include <QtWidgets/QVBoxLayout>
@@ -10,59 +11,19 @@
 #include "ImageViewer.h"
 
 
-IVInfoPanel::IVInfoPanel(ImageViewer *viewerTab) : InfoPanel() {
+IVImageView::IVImageView(ImageViewer *viewerTab) : ImageView() {
     imageViewer_ = viewerTab;
+    connect(this->scene(), &QGraphicsScene::selectionChanged, imageViewer_, &ImageViewer::imageSelectionChanged);
 }
 
-void IVInfoPanel::refresh() {
-    InfoPanel::refresh();
-    if (imageViewer_) {
-        fileValue->setText(imageViewer_->fileInfo());
-        wordsCountValue->setText(QString::number(imageViewer_->itemsCount()));
-    }
-}
-
-
-////////////////////
-
-
-IVDataListPanel::IVDataListPanel(ImageViewer *viewerTab) : DataListPanel() {
-    imageViewer_ = viewerTab;
-    setCreationAvailable(true);
-    connect(this, &IVDataListPanel::itemAdded, imageViewer_, &ImageViewer::addItem);
-    connect(this, &IVDataListPanel::itemClicked, imageViewer_, &ImageViewer::selectItem);
-    connect(this, &IVDataListPanel::itemRemoved, imageViewer_, &ImageViewer::removeItem);
-}
-
-TextItem *IVDataListPanel::createItem() {
-    if (imageViewer_ && imageViewer_->dataViewPanel)
-        return imageViewer_->dataViewPanel->createItem();
-    else
-        return DataListPanel::createItem();
-}
-
-
-////////////////////
-
-
-IVDataViewPanel::IVDataViewPanel(ImageViewer *viewerTab) : DataViewPanel() {
-    imageViewer_ = viewerTab;
-    setCreationAvailable(true);
-    connect(this, &IVDataViewPanel::itemUpdated, imageViewer_, &ImageViewer::refreshItem);
-    connect(this, &IVDataViewPanel::itemCreated, imageViewer_, &ImageViewer::addItem);
-//    connect(this, &IVDataViewPanel::itemCreated, imageViewer_, &ImageViewer::selectItem);
-    connect(this, &IVDataViewPanel::itemRemoved, imageViewer_, &ImageViewer::removeItem);
-}
-
-void IVDataViewPanel::refreshRanges() {
-    DataViewPanel::refreshRanges();
-    if (imageViewer_) {
-        QRect imageRect = imageViewer_->imageRect();
-        posXValue->setRange(0, imageRect.width());
-        posYValue->setRange(0, imageRect.height());
-        sizeXValue->setRange(0, imageRect.width());
-        sizeYValue->setRange(0, imageRect.height());
-    }
+void IVImageView::mousePressEvent(QMouseEvent *event) {
+    if (event->button() == Qt::MouseButton::RightButton) {
+        if (dragMode() == IVImageView::ScrollHandDrag)
+            setDragMode(IVImageView::RubberBandDrag);
+        else if (dragMode() == ImageView::RubberBandDrag)
+            setDragMode(IVImageView::ScrollHandDrag);
+    } else
+        ImageView::mousePressEvent(event);
 }
 
 
@@ -94,7 +55,7 @@ ImageViewer *ImageViewer::loadFile(const QString &path) {
 ImageViewer::ImageViewer(QWidget *parent) : Tab(parent) {
     setContentsMargins(0, 0, 0, 0);
 
-    imageView = new ImageView();
+    imageView = new IVImageView(this);
     setLayout(new QVBoxLayout());
     layout()->addWidget(imageView);
 
@@ -104,8 +65,8 @@ ImageViewer::ImageViewer(QWidget *parent) : Tab(parent) {
 }
 
 ImageViewer::~ImageViewer() {
-    while (!items_.empty())
-        delete items_.takeLast();
+    while (!items.empty())
+        delete items.takeLast();
 }
 
 QList<QWidget *> ImageViewer::getPanels() {
@@ -119,13 +80,14 @@ void ImageViewer::clear() {
         dataListPanel->clear();
     if (dataViewPanel)
         dataViewPanel->setItem(nullptr);
-    while (!items_.empty())
-        delete items_.takeLast();
+    while (!items.empty())
+        delete items.takeLast();
+    itemWidgets.clear();
     if (infoPanel)
         infoPanel->refresh();
 }
 
-bool ImageViewer::isClearAvailable() { return !items_.empty(); }
+bool ImageViewer::isClearAvailable() { return !items.empty(); }
 
 bool ImageViewer::hasImage() { return imageView && imageView->hasImage(); }
 
@@ -146,12 +108,26 @@ void ImageViewer::setFileInfo(const QString &path) {
         infoPanel->refresh();
 }
 
+TextItemWidget *ImageViewer::widget(TextItem *textItem) {
+    TextItemWidget *itemWidget = nullptr;
+    for (auto i = itemWidgets.begin(); i != itemWidgets.end() && itemWidget == nullptr; ++i)
+        if ((*i)->item() == textItem)
+            itemWidget = *i;
+    return itemWidget;
+}
+
 void ImageViewer::addItem(TextItem *textItem) {
-    items_.append(textItem);
+    items.append(textItem);
     if (dataListPanel && sender() != dataListPanel) {
         const QSignalBlocker blocker(dataListPanel);
         dataListPanel->addItem(textItem);
     }
+
+    auto widget = new TextItemWidget(textItem);
+    connect(widget, &TextItemWidget::itemUpdated, this, &ImageViewer::refreshItem);
+    itemWidgets.append(widget);
+    imageView->scene()->addItem(widget->proxy());
+
     if (infoPanel)
         infoPanel->refresh();
 }
@@ -164,6 +140,9 @@ void ImageViewer::selectItem(TextItem *textItem) {
 }
 
 void ImageViewer::refreshItem(TextItem *textItem) {
+    TextItemWidget *itemWidget;
+    if (sender() != (itemWidget = widget(textItem)) || sender() == nullptr)
+        itemWidget->refresh();
     if (dataListPanel && sender() != dataListPanel)
         dataListPanel->refreshItem(textItem);
     if (dataViewPanel && textItem && dataViewPanel->item() == textItem)
@@ -180,10 +159,38 @@ void ImageViewer::removeItem(TextItem *textItem) {
         const QSignalBlocker blocker(dataViewPanel);
         dataViewPanel->removeItem();
     }
-    items_.removeOne(textItem);
+    TextItemWidget *itemWidget = widget(textItem);
+    itemWidgets.removeOne(itemWidget);
+    items.removeOne(textItem);
+    itemWidget->deleteLater();
     delete textItem;
     if (infoPanel)
         infoPanel->refresh();
 }
 
-int ImageViewer::itemsCount() { return items_.size(); }
+int ImageViewer::itemsCount() { return items.size(); }
+
+void ImageViewer::imageSelectionChanged() {
+    if (imageView->scene()->selectedItems().empty())
+        return;
+    QList<TextItem *> items;
+    for (QGraphicsItem *graphicsItem : imageView->scene()->selectedItems()) {
+        QGraphicsProxyWidget *proxy = nullptr;
+        TextItemWidget *itemWidget = nullptr;
+        if ((proxy = dynamic_cast<QGraphicsProxyWidget *>(graphicsItem)) &&
+            (itemWidget = dynamic_cast<TextItemWidget *>(proxy->widget()))) {
+            int i;
+            for (i = 0; i < items.size() && (
+                    itemWidget->item()->pos().y() >= items[i]->pos().y() ||
+                    itemWidget->item()->pos().x() > items[i]->pos().x()
+            ); ++i);
+            items.insert(i, itemWidget->item());
+        }
+    }
+    if (items.empty())
+        return;
+    QList<QString> contents;
+    while (!items.empty())
+        contents.append(items.takeFirst()->text());
+    QApplication::clipboard()->setText(contents.join(" "));
+}

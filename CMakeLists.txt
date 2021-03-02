@@ -46,14 +46,14 @@ set(SOURCES
         Tabs/ImageViewer.cpp Tabs/ImageViewer.h
         Tabs/ImageView.cpp Tabs/ImageView.h
 
-        TextData.cpp TextData.h)
+        TextData.cpp TextData.h Tabs/ImageViewerPanels.cpp Tabs/ImageViewerPanels.h)
 
 
-#if (CMAKE_BUILD_TYPE MATCHES "Debug")
-#    add_executable(${PROJECT_NAME} Debug.h ${SOURCES})
-#else()
-add_executable(${PROJECT_NAME} WIN32 ${SOURCES})
-#endif()
+if (CMAKE_BUILD_TYPE MATCHES "Debug")
+    add_executable(${PROJECT_NAME} ${SOURCES})
+else()
+    add_executable(${PROJECT_NAME} WIN32 ${SOURCES})
+endif()
 target_link_libraries(${PROJECT_NAME} ${QT_LIBS})
 
 

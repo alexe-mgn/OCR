@@ -1,10 +1,14 @@
 #ifndef TEXTDATA_H
 #define TEXTDATA_H
 
+
+#include <QtCore/QLineF>
 #include <QtCore/QRect>
 
 #include <QtWidgets/QWidget>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QGraphicsProxyWidget>
 
 
 class TextItem {
@@ -74,8 +78,28 @@ public:
 
     void setItem(TextItem *textItem);
 
+    void updateItem();
+
+    QGraphicsProxyWidget *proxy();
+
+signals:
+
+    void itemUpdated(TextItem *textItem);
+
+protected:
+
+    void mousePressEvent(QMouseEvent *ev) override;
+
+    void mouseMoveEvent(QMouseEvent *ev) override;
+
+    void mouseReleaseEvent(QMouseEvent *ev) override;
+
 protected:
     TextItem *item_ = nullptr;
+    QGraphicsProxyWidget *proxy_ = nullptr;
+
+    bool dragging = false;
+    QLineF shift;
 };
 
 

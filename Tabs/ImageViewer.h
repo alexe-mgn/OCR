@@ -1,70 +1,28 @@
 #ifndef IMAGEVIEWER_H
 #define IMAGEVIEWER_H
 
+
 #include <QtCore/QList>
 
 #include <QtWidgets/QWidget>
 
 #include "TextData.h"
-#include "Panels/InfoPanel.h"
-#include "Panels/DataListPanel.h"
-#include "Panels/DataViewPanel.h"
-#include "ImageView.h"
-#include "Tab.h"
+#include "Tabs/ImageView.h"
+#include "Tabs/ImageViewerPanels.h"
+#include "Tabs/Tab.h"
 
 
-class ImageViewer;
-
-class IVInfoPanel : public InfoPanel {
+class IVImageView : public ImageView {
 Q_OBJECT
 
 public:
-    explicit IVInfoPanel(ImageViewer *viewerTab);
-
-    void refresh() override;
+    explicit IVImageView(ImageViewer *viewerTab);
 
 protected:
-    ImageViewer *imageViewer_;
-};
-////////////////////
-
-
-class IVDataListPanel : public DataListPanel {
-Q_OBJECT
-
-public:
-    explicit IVDataListPanel(ImageViewer *viewerTab);
-
-public slots:
-
-    virtual void selectItem(TextItem *textItem) {}
-
-    TextItem *createItem() override;
-
-protected:
-    ImageViewer *imageViewer_;
-};
-
-
-////////////////////
-
-
-class IVDataViewPanel : public DataViewPanel {
-Q_OBJECT
-
-public:
-    explicit IVDataViewPanel(ImageViewer *viewerTab);
-
-public slots:
-
-    void refreshRanges() override;
-
-private:
     ImageViewer *imageViewer_ = nullptr;
+
+    void mousePressEvent(QMouseEvent *event) override;
 };
-
-
-////////////////////
 
 
 class ImageViewer : public Tab {
@@ -81,7 +39,6 @@ public:
 
     bool isSaveAvailable() override;
 
-
     bool isClearAvailable() override;
 
     bool hasImage();
@@ -91,6 +48,9 @@ public:
     QString fileInfo();
 
     int itemsCount();
+
+public:
+    TextItemWidget *widget(TextItem *textItem);
 
 public slots:
 
@@ -108,13 +68,16 @@ public slots:
 
     void setFileInfo(const QString &path);
 
+    void imageSelectionChanged();
+
 public:
     IVInfoPanel *infoPanel;
     IVDataListPanel *dataListPanel;
     IVDataViewPanel *dataViewPanel;
 protected:
-    ImageView *imageView;
-    QList<TextItem *> items_;
+    IVImageView *imageView;
+    QList<TextItem *> items;
+    QList<TextItemWidget *> itemWidgets;
 
     QString filePath;
 };
