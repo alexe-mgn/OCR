@@ -125,6 +125,7 @@ void ImageViewer::addItem(TextItem *textItem) {
 
     auto widget = new TextItemWidget(textItem);
     connect(widget, &TextItemWidget::itemUpdated, this, &ImageViewer::refreshItem);
+    // TODO click selection
     itemWidgets.append(widget);
     imageView->scene()->addItem(widget->proxy());
 
@@ -173,24 +174,24 @@ int ImageViewer::itemsCount() { return items.size(); }
 void ImageViewer::imageSelectionChanged() {
     if (imageView->scene()->selectedItems().empty())
         return;
-    QList<TextItem *> items;
+    QList<TextItem *> selectedItems;
     for (QGraphicsItem *graphicsItem : imageView->scene()->selectedItems()) {
         QGraphicsProxyWidget *proxy = nullptr;
         TextItemWidget *itemWidget = nullptr;
         if ((proxy = dynamic_cast<QGraphicsProxyWidget *>(graphicsItem)) &&
             (itemWidget = dynamic_cast<TextItemWidget *>(proxy->widget()))) {
             int i;
-            for (i = 0; i < items.size() && (
-                    itemWidget->item()->pos().y() >= items[i]->pos().y() ||
-                    itemWidget->item()->pos().x() > items[i]->pos().x()
+            for (i = 0; i < selectedItems.size() && (
+                    itemWidget->item()->pos().y() >= selectedItems[i]->pos().y() ||
+                    itemWidget->item()->pos().x() > selectedItems[i]->pos().x()
             ); ++i);
-            items.insert(i, itemWidget->item());
+            selectedItems.insert(i, itemWidget->item());
         }
     }
-    if (items.empty())
+    if (selectedItems.empty())
         return;
     QList<QString> contents;
-    while (!items.empty())
-        contents.append(items.takeFirst()->text());
+    while (!selectedItems.empty())
+        contents.append(selectedItems.takeFirst()->text());
     QApplication::clipboard()->setText(contents.join(" "));
 }

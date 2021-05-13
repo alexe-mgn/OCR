@@ -55,7 +55,7 @@ public:
 
     virtual TextListItem *widget(TextItem *textItem);
 
-    bool isCreationAvailable();
+    bool isCreationAvailable() const;
 
 public slots:
 

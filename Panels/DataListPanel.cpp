@@ -54,7 +54,7 @@ TextListItem *DataListPanel::widget(TextItem *textItem) {
     return listItem;
 }
 
-bool DataListPanel::isCreationAvailable() { return creationAvailable; }
+bool DataListPanel::isCreationAvailable() const { return creationAvailable; }
 
 void DataListPanel::connectListItem(TextListItem *listItem) {
     connect(listItem, &TextListItem::clicked, this, &DataListPanel::emitSenderClicked);
