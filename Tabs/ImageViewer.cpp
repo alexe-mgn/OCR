@@ -1,6 +1,6 @@
+#include <QtCore/QMap>
 #include <QtCore/QSignalBlocker>
 #include <QtCore/QTextStream>
-#include <QtCore/QMap>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 
@@ -11,6 +11,7 @@
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QFileDialog>
 
+#include "recognition.h"
 #include "ImageViewer.h"
 #include "TextData.h"
 
@@ -209,6 +210,14 @@ void ImageViewer::removeItem(TextItem *textItem) {
 
 int ImageViewer::itemsCount() { return items.size(); }
 
+void ImageViewer::scan() {
+    if (hasImage()) {
+        ImageCR cr;
+        cr.scan(imageView->image());
+        for (TextItem *item : cr.items)
+            addItem(item);
+    }
+}
 
 void ImageViewer::imageSelectionChanged() {
     if (imageView->scene()->selectedItems().empty())

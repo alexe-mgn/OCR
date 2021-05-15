@@ -51,7 +51,7 @@ set(SOURCES
         Tabs/CameraTab.cpp Tabs/CameraTab.h
 
         TextData.cpp TextData.h
-        )
+        recognition.cpp recognition.h)
 
 
 if (CMAKE_BUILD_TYPE MATCHES "Debug")

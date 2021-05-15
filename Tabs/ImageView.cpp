@@ -23,6 +23,10 @@ void ImageView::reset() {
     scaleFactor = 1;
 }
 
+const QImage &ImageView::image() {
+    return *image_;
+}
+
 void ImageView::setImage(const QImage &newImage) {
     delete image_;
     image_ = new QImage(newImage);

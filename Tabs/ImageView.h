@@ -25,6 +25,8 @@ public:
 
     bool hasImage() { return (bool) image_; };
 
+    const QImage &image();
+
     void setImage(const QImage &newImage);
 
     [[nodiscard]] QRect imageRect() const {

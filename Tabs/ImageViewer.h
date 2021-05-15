@@ -72,6 +72,8 @@ public slots:
 
     void removeItem(TextItem *textItem);
 
+    void scan();
+
     void exportData() override;
 
     void clear() override;

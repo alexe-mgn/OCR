@@ -71,7 +71,7 @@ TextItemWidget::TextItemWidget() : QPushButton() {
     proxy_->setWidget(this);
     proxy_->setMinimumSize(0, 0);
 
-    setStyleSheet("border: 1px solid rgb(0, 0, 255); background: rgba(0, 0, 0, 0)");
+    setStyleSheet("border: 4px solid rgb(0, 0, 255); background: rgba(0, 0, 0, 0)");
 
     proxy_->setFlag(QGraphicsProxyWidget::GraphicsItemFlag::ItemIsSelectable);
 //    proxy_->setFlag(QGraphicsProxyWidget::GraphicsItemFlag::ItemIsMovable);

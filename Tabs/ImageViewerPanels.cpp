@@ -6,6 +6,7 @@
 
 IVInfoPanel::IVInfoPanel(ImageViewer *viewerTab) : InfoPanel() {
     imageViewer_ = viewerTab;
+    connect(scanButton, &QPushButton::clicked, imageViewer_, &ImageViewer::scan);
 }
 
 void IVInfoPanel::refresh() {
