@@ -2,7 +2,12 @@
 #define IMAGEVIEWER_H
 
 
+#include <QtCore/QString>
 #include <QtCore/QList>
+#include <QtCore/QRect>
+#include <QtCore/QDir>
+
+#include <QtGui/QImage>
 
 #include <QtWidgets/QWidget>
 
@@ -40,7 +45,7 @@ public:
 
     QList<QWidget *> getPanels() override;
 
-    bool isSaveAvailable() override;
+//    bool isSaveAvailable() override;
 
     bool isExportAvailable() override;
 
@@ -67,6 +72,8 @@ public slots:
 
     void removeItem(TextItem *textItem);
 
+    void exportData() override;
+
     void clear() override;
 
     void setImage(const QImage &newImage);
@@ -85,6 +92,7 @@ protected:
     QList<TextItemWidget *> itemWidgets;
 
     QString filePath;
+    QDir exportPath;
 };
 
 

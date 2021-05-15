@@ -61,9 +61,20 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     // actions
     connect(menuFile, &QMenu::aboutToShow, this, &MainWindow::updateActions);
-    connect(actionExit, &QAction::triggered, this, &MainWindow::close);
+    // file
     connect(actionOpenFile, &QAction::triggered, this, &MainWindow::chooseOpenFile);
     connect(actionOpenCamera, &QAction::triggered, this, &MainWindow::openCamera);
+    actionSave->deleteLater();
+    connect(actionExport, &QAction::triggered, [this] { this->currentTab()->exportData(); });
+    connect(actionExit, &QAction::triggered, this, &MainWindow::close);
+    // TODO edit
+    actionUndo->deleteLater();
+    actionRedo->deleteLater();
+    connect(actionClear, &QAction::triggered, [this] { this->currentTab()->clear(); });
+    // TODO view
+    menuView->deleteLater();
+    // TODO settings
+    menuSettings->deleteLater();
 
     const QStringList sp = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
     fileLastPath = sp.empty() ? QDir::current() : sp.last();
@@ -91,8 +102,10 @@ void MainWindow::addTab(Tab *tab) {
 
 void MainWindow::updateActions() {
     Tab *tab = currentTab();
-    actionSave->setEnabled(tab->isSaveAvailable());
-    // TODO actionExport
+    // TODO actionSave
+//    actionSave->setEnabled(tab->isSaveAvailable());
+    actionExport->setEnabled(tab->isExportAvailable());
+    actionClear->setEnabled(tab->isClearAvailable());
 }
 
 void MainWindow::openImage(const QImage &image) {

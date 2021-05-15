@@ -8,7 +8,7 @@ PanelContainer::PanelContainer(QWidget *parent) : QStackedWidget(parent) {
 void PanelContainer::connectTab(Tab *tab, QWidget *widget) {
     tabWidgets_.insert(tab, widget);
     addWidget(widget);
-    currentTab_ = tabWidgets_.keys(currentWidget()).first();
+    currentTab_ = tabWidgets_.key(currentWidget());
 }
 
 QList<Tab *> PanelContainer::tabs() {
@@ -39,7 +39,7 @@ void PanelContainer::removeTab(Tab *tab) {
     tabWidgets_.remove(tab);
 //    tab->setParent(nullptr);
     if (!tabWidgets_.empty())
-        currentTab_ = tabWidgets_.keys(currentWidget()).first();
+        currentTab_ = tabWidgets_.key(currentWidget());
     else
         currentTab_ = nullptr;
 }

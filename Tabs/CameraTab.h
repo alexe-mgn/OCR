@@ -51,7 +51,7 @@ public:
 
     QList<QWidget *> getPanels() override;
 
-    bool isSaveAvailable() override;
+//    bool isSaveAvailable() override;
 
     virtual QCamera *camera();
 

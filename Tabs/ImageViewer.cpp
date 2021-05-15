@@ -1,14 +1,18 @@
 #include <QtCore/QSignalBlocker>
+#include <QtCore/QTextStream>
+#include <QtCore/QMap>
+#include <QtCore/QFile>
 #include <QtCore/QFileInfo>
-#include <QtCore/QDir>
 
 #include <QtGui/QClipboard>
 #include <QtGui/QImageReader>
 
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QMessageBox>
+#include <QtWidgets/QFileDialog>
 
 #include "ImageViewer.h"
+#include "TextData.h"
 
 
 IVImageView::IVImageView(ImageViewer *viewerTab) : ImageView() {
@@ -81,7 +85,31 @@ QList<QWidget *> ImageViewer::getPanels() {
     return QList<QWidget *>{infoPanel, dataListPanel, dataViewPanel};
 }
 
-bool ImageViewer::isSaveAvailable() { return imageView && imageView->isSaveAvailable(); }
+//bool ImageViewer::isSaveAvailable() { return imageView && imageView->isSaveAvailable(); }
+
+void ImageViewer::exportData() {
+    QFileDialog dialog(this, tr("Choose output file"));
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+
+    QMap<QString, QString (*)(const QList<TextItem *> &)> filters = {
+            {"CSV (*.csv)", &itemsToCSV},
+            {"TXT (*.txt)", &itemsToText}
+    };
+    dialog.setNameFilters(filters.keys());
+
+    dialog.setDirectory(exportPath);
+
+    while (dialog.exec() == QDialog::Accepted) {
+        exportPath = dialog.directory();
+        QFile file(dialog.selectedFiles().first());
+        if (file.open(QFile::WriteOnly | QFile::Text)) {
+            file.write(filters[dialog.selectedNameFilter()](items).toUtf8());
+            file.close();
+            return;
+        }
+    }
+}
 
 bool ImageViewer::isExportAvailable() { return !items.empty(); }
 
@@ -135,7 +163,7 @@ void ImageViewer::addItem(TextItem *textItem) {
 
     auto widget = new TextItemWidget(textItem);
     connect(widget, &TextItemWidget::itemUpdated, this, &ImageViewer::refreshItem);
-    // TODO click selection
+    connect(widget, &TextItemWidget::clicked, [this, widget] { this->selectItem(widget->item()); });
     itemWidgets.append(widget);
     imageView->scene()->addItem(widget->proxy());
 
@@ -181,6 +209,7 @@ void ImageViewer::removeItem(TextItem *textItem) {
 
 int ImageViewer::itemsCount() { return items.size(); }
 
+
 void ImageViewer::imageSelectionChanged() {
     if (imageView->scene()->selectedItems().empty())
         return;
@@ -190,18 +219,9 @@ void ImageViewer::imageSelectionChanged() {
         TextItemWidget *itemWidget;
         if ((proxy = dynamic_cast<QGraphicsProxyWidget *>(graphicsItem)) &&
             (itemWidget = dynamic_cast<TextItemWidget *>(proxy->widget()))) {
-            int i;
-            for (i = 0; i < selectedItems.size() && (
-                    itemWidget->item()->pos().y() >= selectedItems[i]->pos().y() ||
-                    itemWidget->item()->pos().x() > selectedItems[i]->pos().x()
-            ); ++i);
-            selectedItems.insert(i, itemWidget->item());
+            selectedItems.append(itemWidget->item());
         }
     }
-    if (selectedItems.empty())
-        return;
-    QList<QString> contents;
-    while (!selectedItems.empty())
-        contents.append(selectedItems.takeFirst()->text());
-    QApplication::clipboard()->setText(contents.join(" "));
+    if (!selectedItems.empty())
+        QApplication::clipboard()->setText(itemsToText(selectedItems));
 }

@@ -68,7 +68,7 @@ QList<QWidget *> CameraTab::getPanels() {
     return QList<QWidget *>{cameraPanel};
 }
 
-bool CameraTab::isSaveAvailable() { return camera_ && camera_->isAvailable(); }
+//bool CameraTab::isSaveAvailable() { return camera_ && camera_->isAvailable(); }
 
 QCamera *CameraTab::camera() {
     return camera_;

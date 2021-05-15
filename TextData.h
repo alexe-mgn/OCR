@@ -2,8 +2,10 @@
 #define TEXTDATA_H
 
 
+#include <QtCore/QString>
 #include <QtCore/QLineF>
 #include <QtCore/QRect>
+#include <QtCore/QList>
 
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QLabel>
@@ -64,6 +66,14 @@ protected:
 ////////////////////
 
 
+QString itemsToCSV(const QList<TextItem *> &items);
+
+QString itemsToText(const QList<TextItem *> &items);
+
+
+////////////////////
+
+
 class TextItemWidget : public QPushButton {
 Q_OBJECT
 
@@ -98,6 +108,7 @@ protected:
     TextItem *item_ = nullptr;
     QGraphicsProxyWidget *proxy_ = nullptr;
 
+    bool m_press = false;
     bool dragging = false;
     QLineF shift;
 };

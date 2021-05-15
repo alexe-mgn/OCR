@@ -17,13 +17,17 @@ public:
 
     virtual QList<QWidget *> getPanels() { return QList<QWidget *>(); }
 
-    virtual bool isSaveAvailable() { return false; }
+//    virtual bool isSaveAvailable() { return false; }
 
     virtual bool isExportAvailable() { return false; }
 
     virtual bool isClearAvailable() { return false; };
 
 public slots:
+
+//    virtual void save() {};
+
+    virtual void exportData() {};
 
     virtual void clear() {};
 
