@@ -5,15 +5,18 @@
 
 #include <QtWidgets/QWidget>
 
-#include "Tab.h"
 #include "ui_HomeTab.h"
+#include "Tabs/Tab.h"
+#include "MainWindow.h"
 
 
 class HomeTab : public Tab, public Ui::HomeTab {
 Q_OBJECT
 
 public:
-    explicit HomeTab(QWidget *parent = nullptr) { setupUi(this); };
+    explicit HomeTab(MainWindow *mainWindow = nullptr, QWidget *parent = nullptr) : Tab(mainWindow, parent) {
+        setupUi(this);
+    };
 
     ~HomeTab() override {};
 };

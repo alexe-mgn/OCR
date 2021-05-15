@@ -27,7 +27,9 @@ public:
 
     void setImage(const QImage &newImage);
 
-    QRect imageRect() { return QRect(QPoint(0, 0), pixmapItem.boundingRect().size().toSize()); }
+    [[nodiscard]] QRect imageRect() const {
+        return QRect(QPoint(0, 0), pixmapItem.boundingRect().size().toSize());
+    }
 
     void resetScale();
 

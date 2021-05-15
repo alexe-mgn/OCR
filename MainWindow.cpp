@@ -13,8 +13,9 @@
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QFileDialog>
 
-#include "Tabs/ImageViewer.h"
 #include "MainWindow.h"
+#include "Tabs/ImageViewer.h"
+#include "Tabs/CameraTab.h"
 
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
@@ -44,18 +45,25 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
         (*dock)->setContainer(*container);
 
     // Home tab
-    homeTab = new HomeTab();
+    homeTab = new HomeTab(this);
     addTab(homeTab);
     //  tab
     tabBar->tabButton(0, QTabBar::RightSide)->deleteLater();
     tabBar->setTabButton(0, QTabBar::RightSide, nullptr);
     //  connections
-    connect(homeTab->openButton, &QPushButton::clicked, actionOpen, &QAction::trigger);
+    connect(homeTab->openFileButton, &QPushButton::clicked, actionOpenFile, &QAction::trigger);
+    connect(homeTab->openCameraButton, &QPushButton::clicked, actionOpenCamera, &QAction::trigger);
     connect(homeTab->exitButton, &QPushButton::clicked, actionExit, &QAction::trigger);
+    // TODO settings
+    homeTab->settingsButton->deleteLater();
+    // TODO recent
+    homeTab->recentGroupBox->deleteLater();
 
     // actions
+    connect(menuFile, &QMenu::aboutToShow, this, &MainWindow::updateActions);
     connect(actionExit, &QAction::triggered, this, &MainWindow::close);
-    connect(actionOpen, &QAction::triggered, this, &MainWindow::chooseFile);
+    connect(actionOpenFile, &QAction::triggered, this, &MainWindow::chooseOpenFile);
+    connect(actionOpenCamera, &QAction::triggered, this, &MainWindow::openCamera);
 
     const QStringList sp = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
     fileLastPath = sp.empty() ? QDir::current() : sp.last();
@@ -81,29 +89,17 @@ void MainWindow::addTab(Tab *tab) {
     tabBar->setCurrentIndex(stack->currentIndex());
 }
 
-//bool MainWindow::loadFile(const QString &path) {
-//    QImageReader reader(path);
-//    reader.setAutoTransform(true);
-//    QImage image = reader.read();
-//    if (image.isNull()) {
-//        QMessageBox msg(QMessageBox::Warning,
-//                        tr("Input error"),
-//                        tr("Cannot load %1").arg(QDir::toNativeSeparators(path)),
-//                        QMessageBox::StandardButton::Abort,
-//                        this);
-//        msg.setDetailedText(reader.errorString());
-//        msg.exec();
-//        return false;
-//    } else {
-//        auto imageViewer = new ImageViewer();
-//        imageViewer->setImage(image);
-//        imageViewer->setWindowTitle(QFileInfo(path).fileName());
-//        addTab(imageViewer);
-//        return true;
-//    }
-//}
+void MainWindow::updateActions() {
+    Tab *tab = currentTab();
+    actionSave->setEnabled(tab->isSaveAvailable());
+    // TODO actionExport
+}
 
-void MainWindow::chooseFile() {
+void MainWindow::openImage(const QImage &image) {
+    addTab(ImageViewer::loadImage(image, this));
+}
+
+void MainWindow::chooseOpenFile() {
     QFileDialog dialog(this, tr("Choose image"));
     dialog.setFileMode(QFileDialog::ExistingFile);
     dialog.setAcceptMode(QFileDialog::AcceptOpen);
@@ -131,18 +127,33 @@ void MainWindow::chooseFile() {
 
     while (dialog.exec() == QDialog::Accepted) {
         fileLastPath = dialog.directory();
-        if (auto imageViewer = ImageViewer::loadFile(dialog.selectedFiles().first())) {
+        if (auto imageViewer = ImageViewer::loadFile(dialog.selectedFiles().first(), this)) {
             addTab(imageViewer);
             return;
         }
     }
 }
 
+void MainWindow::openCamera() {
+    int i;
+    for (i = 0;
+         i < stack->count() && dynamic_cast<CameraTab *>(stack->widget(i)) == nullptr;
+         ++i);
+    if (i >= stack->count()) {
+        addTab(new CameraTab(this));
+    }
+    setCurrentIndex(i);
+}
+
+Tab *MainWindow::currentTab() const {
+    return dynamic_cast<Tab *>(stack->currentWidget());
+}
+
 void MainWindow::setCurrentIndex(int index) {
     tabBar->setCurrentIndex(index);
     stack->setCurrentIndex(index);
     for (auto &dock : panelDockWidgets)
-        dock->setCurrentTab(dynamic_cast<Tab *>(stack->currentWidget()));
+        dock->setCurrentTab(currentTab());
 }
 
 void MainWindow::closeTab(int index) {

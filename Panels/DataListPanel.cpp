@@ -1,10 +1,10 @@
-#include "DataListPanel.h"
-
 #include <QtCore/QString>
 
 #include <QtWidgets/QStyle>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QToolButton>
+
+#include "DataListPanel.h"
 
 
 TextListItem::TextListItem() : QWidget() {

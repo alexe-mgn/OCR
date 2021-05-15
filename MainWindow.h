@@ -9,10 +9,10 @@
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QTabBar>
 
+#include "ui_MainWindow.h"
 #include "Panels/PanelContainers.h"
 #include "Tabs/Tab.h"
 #include "Tabs/HomeTab.h"
-#include "ui_MainWindow.h"
 
 
 class MainWindow : public QMainWindow, public Ui::MainWindow {
@@ -32,11 +32,19 @@ public:
 
     void addTab(Tab *tab);
 
+    void updateActions();
+
 //    bool loadFile(const QString &path);
 
-    void chooseFile();
+    void openImage(const QImage &image);
+
+    void chooseOpenFile();
+
+    void openCamera();
 
     void closeTab(int index);
+
+    [[nodiscard]] Tab *currentTab() const;
 
     void setCurrentIndex(int index);
 

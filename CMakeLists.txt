@@ -11,7 +11,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Qt
 set(QT_VERSION 5)
 set(QT_LIB Qt${QT_VERSION})
-set(QT_COMPONENTS Widgets)
+set(QT_COMPONENTS Widgets Multimedia MultimediaWidgets)
 set(QT_LIBS ${QT_COMPONENTS})
 LIST(TRANSFORM QT_LIBS PREPEND ${QT_LIB}::)
 
@@ -43,10 +43,15 @@ set(SOURCES
         Tabs/Tab.h
 
         Tabs/HomeTab.h
-        Tabs/ImageViewer.cpp Tabs/ImageViewer.h
-        Tabs/ImageView.cpp Tabs/ImageView.h
 
-        TextData.cpp TextData.h Tabs/ImageViewerPanels.cpp Tabs/ImageViewerPanels.h)
+        Tabs/ImageView.cpp Tabs/ImageView.h
+        Tabs/ImageViewerPanels.cpp Tabs/ImageViewerPanels.h
+        Tabs/ImageViewer.cpp Tabs/ImageViewer.h
+
+        Tabs/CameraTab.cpp Tabs/CameraTab.h
+
+        TextData.cpp TextData.h
+        )
 
 
 if (CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -88,6 +93,18 @@ find_path(_dp imageformats
 )
 if (NOT _dp MATCHES "_dp-NOTFOUND")
     file(INSTALL ${_dp}/imageformats DESTINATION ${INSTALL_DESTINATION})
+endif()
+]])
+install(CODE [[
+unset(_dp CACHE)
+find_path(_dp mediaservice
+    PATHS ${CMAKE_PREFIX_PATH}
+    PATH_SUFFIXES plugins
+)
+if (NOT _dp MATCHES "_dp-NOTFOUND")
+    file(INSTALL ${_dp}/mediaservice DESTINATION ${INSTALL_DESTINATION})
+else()
+    message("Could not find mediaservice plugins, camera services might not work properly.")
 endif()
 ]])
 

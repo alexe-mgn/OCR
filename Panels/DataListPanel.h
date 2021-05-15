@@ -16,7 +16,7 @@ class DataListPanel;
 class TextListItem : public QWidget, public Ui::TextListItem {
 Q_OBJECT
 
-    friend class DataListPanel;
+//    friend class DataListPanel;
 
 public:
     explicit TextListItem();
@@ -55,7 +55,7 @@ public:
 
     virtual TextListItem *widget(TextItem *textItem);
 
-    bool isCreationAvailable() const;
+    [[nodiscard]] bool isCreationAvailable() const;
 
 public slots:
 

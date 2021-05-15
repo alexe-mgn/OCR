@@ -10,6 +10,7 @@
 #include "Tabs/ImageView.h"
 #include "Tabs/ImageViewerPanels.h"
 #include "Tabs/Tab.h"
+#include "MainWindow.h"
 
 
 class IVImageView : public ImageView {
@@ -29,15 +30,19 @@ class ImageViewer : public Tab {
 Q_OBJECT
 
 public:
-    static ImageViewer *loadFile(const QString &path);
+    static ImageViewer *loadImage(const QImage &image, MainWindow *mainWindow = nullptr);
 
-    explicit ImageViewer(QWidget *parent = nullptr);
+    static ImageViewer *loadFile(const QString &path, MainWindow *mainWindow = nullptr);
+
+    explicit ImageViewer(MainWindow *mainWindow = nullptr, QWidget *parent = nullptr);
 
     ~ImageViewer() override;
 
     QList<QWidget *> getPanels() override;
 
     bool isSaveAvailable() override;
+
+    bool isExportAvailable() override;
 
     bool isClearAvailable() override;
 
@@ -83,4 +88,4 @@ protected:
 };
 
 
-#endif
+#endif //IMAGEVIEWER_H

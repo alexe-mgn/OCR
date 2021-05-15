@@ -30,7 +30,14 @@ void IVImageView::mousePressEvent(QMouseEvent *event) {
 ////////////////////
 
 
-ImageViewer *ImageViewer::loadFile(const QString &path) {
+ImageViewer *ImageViewer::loadImage(const QImage &image, MainWindow *mainWindow) {
+    auto imageViewer = new ImageViewer(mainWindow);
+    imageViewer->setImage(image);
+    return imageViewer;
+}
+
+
+ImageViewer *ImageViewer::loadFile(const QString &path, MainWindow *mainWindow) {
     QImageReader reader(path);
     reader.setAutoTransform(true);
     QImage image = reader.read();
@@ -43,8 +50,7 @@ ImageViewer *ImageViewer::loadFile(const QString &path) {
         msg.exec();
         return nullptr;
     } else {
-        auto imageViewer = new ImageViewer();
-        imageViewer->setImage(image);
+        auto imageViewer = ImageViewer::loadImage(image, mainWindow);
         imageViewer->setFileInfo(path);
 //        imageViewer->setWindowTitle(QFileInfo(path).fileName());
         return imageViewer;
@@ -52,7 +58,7 @@ ImageViewer *ImageViewer::loadFile(const QString &path) {
 }
 
 
-ImageViewer::ImageViewer(QWidget *parent) : Tab(parent) {
+ImageViewer::ImageViewer(MainWindow *mainWindow, QWidget *parent) : Tab(mainWindow, parent) {
     setContentsMargins(0, 0, 0, 0);
 
     imageView = new IVImageView(this);
@@ -67,6 +73,8 @@ ImageViewer::ImageViewer(QWidget *parent) : Tab(parent) {
 ImageViewer::~ImageViewer() {
     while (!items.empty())
         delete items.takeLast();
+    for (auto w : QList<QWidget *>{infoPanel, dataListPanel, dataViewPanel})
+        w->deleteLater();
 }
 
 QList<QWidget *> ImageViewer::getPanels() {
@@ -74,6 +82,8 @@ QList<QWidget *> ImageViewer::getPanels() {
 }
 
 bool ImageViewer::isSaveAvailable() { return imageView && imageView->isSaveAvailable(); }
+
+bool ImageViewer::isExportAvailable() { return !items.empty(); }
 
 void ImageViewer::clear() {
     if (dataListPanel)
@@ -176,8 +186,8 @@ void ImageViewer::imageSelectionChanged() {
         return;
     QList<TextItem *> selectedItems;
     for (QGraphicsItem *graphicsItem : imageView->scene()->selectedItems()) {
-        QGraphicsProxyWidget *proxy = nullptr;
-        TextItemWidget *itemWidget = nullptr;
+        QGraphicsProxyWidget *proxy;
+        TextItemWidget *itemWidget;
         if ((proxy = dynamic_cast<QGraphicsProxyWidget *>(graphicsItem)) &&
             (itemWidget = dynamic_cast<TextItemWidget *>(proxy->widget()))) {
             int i;
