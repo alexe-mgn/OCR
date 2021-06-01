@@ -77,8 +77,8 @@ void PanelDockWidget::connectTab(Tab *tab, QWidget *widget) {
 bool PanelDockWidget::setCurrentTab(Tab *newTab) {
     bool haveTab = container_->setCurrentTab(newTab);
     if (haveTab) {
-        show();
         setWindowTitle(container_->windowTitle());
+        show();
         return true;
     } else {
         hide();

@@ -21,6 +21,8 @@ Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = nullptr);
 
+    ~MainWindow();
+
     QTabBar *tabBar;
     QStackedWidget *stack;
     HomeTab *homeTab;
@@ -49,6 +51,7 @@ public:
     void setCurrentIndex(int index);
 
     void moveTab(int from, int to);
+
 
 protected:
     void uiTabMoved(int from, int to);

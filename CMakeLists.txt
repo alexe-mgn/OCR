@@ -17,9 +17,9 @@ LIST(TRANSFORM QT_LIBS PREPEND ${QT_LIB}::)
 
 if (CMAKE_BUILD_TYPE MATCHES "Debug")
     string(TOLOWER "platforms/q${CMAKE_SYSTEM_NAME}d${CMAKE_SHARED_LIBRARY_SUFFIX}" QT_PLUGINS)
-else()
+else ()
     string(TOLOWER "platforms/q${CMAKE_SYSTEM_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}" QT_PLUGINS)
-endif()
+endif ()
 
 find_package(${QT_LIB} COMPONENTS ${QT_COMPONENTS} REQUIRED)
 
@@ -28,10 +28,16 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOUIC_SEARCH_PATHS UI)
 set(CMAKE_AUTORCC ON)
 
+# Python
+find_package(Python COMPONENTS Interpreter Development REQUIRED)
+find_package(PythonLibs REQUIRED)
+include_directories(${PYTHON_INCLUDE_DIRS})
+
 
 # Targeting
 set(SOURCES
         main.cpp
+        App.cpp App.h
         MainWindow.cpp MainWindow.h
 
         Panels/PanelContainers.cpp Panels/PanelContainers.h
@@ -51,16 +57,16 @@ set(SOURCES
         Tabs/CameraTab.cpp Tabs/CameraTab.h
 
         TextData.cpp TextData.h
-        recognition.cpp recognition.h)
+        recognition.cpp recognition.h
+        )
 
 
 if (CMAKE_BUILD_TYPE MATCHES "Debug")
     add_executable(${PROJECT_NAME} ${SOURCES})
-else()
+else ()
     add_executable(${PROJECT_NAME} WIN32 ${SOURCES})
-endif()
-target_link_libraries(${PROJECT_NAME} ${QT_LIBS})
-
+endif ()
+target_link_libraries(${PROJECT_NAME} ${QT_LIBS} ${PYTHON_LIBRARIES})
 
 # Installation
 set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR})
@@ -70,6 +76,7 @@ file(TO_CMAKE_PATH "${CMAKE_PREFIX_PATH}" CMAKE_PREFIX_PATH)
 include(cmake/init_install.cmake)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION ${INSTALL_DESTINATION})
+install(FILES Readme.txt PYTHONHOME.txt DESTINATION ${INSTALL_DESTINATION})
 
 install(CODE "set(QT_PLUGINS ${QT_PLUGINS})")
 install(CODE [[

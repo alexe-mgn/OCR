@@ -7,6 +7,46 @@
 #include "TextData.h"
 
 
+QList<TextItem *> joinLetters(QList<TextItem *> letters) {
+    QList<TextItem *> words;
+    std::sort(letters.begin(), letters.end(), [](TextItem *a, TextItem *b) {
+        return a->pos().x() < b->pos().x();
+    });
+    int skip;
+    while (!letters.empty()) {
+        skip = 0;
+        QList<TextItem *> word;
+        QRect word_rect;
+        QRect prev_rect;
+        while (skip < letters.count()) {
+            TextItem *letter = letters[skip];
+            if (word.empty() || (
+                    abs(
+                            letter->rect().center().y() - (prev_rect = word.last()->rect()).center().y()
+                    ) <= prev_rect.height() * 0.5 &&
+                    abs(
+                            letter->rect().left() - prev_rect.right()
+                    ) <= (letter->rect().width() + prev_rect.width()) * 0.14)
+                    ) {
+                letters.removeOne(letter);
+                word_rect = !word.empty() ? word_rect.united(letter->rect()) : letter->rect();
+                word.append(letter);
+            } else
+                ++skip;
+        }
+        std::sort(word.begin(), word.end(), [](TextItem *a, TextItem *b) {
+            return a->pos().x() < b->pos().x();
+        });
+        QString word_text;
+        QTextStream stream(&word_text);
+        while (!word.empty())
+            stream << word.takeFirst()->text();
+        words.append(new TextItem(word_rect, word_text));
+    }
+    return words;
+}
+
+
 QString itemsToCSV(const QList<TextItem *> &items) {
     char d = ',';
     char n = '\n';
@@ -48,7 +88,7 @@ QString itemsToText(const QList<TextItem *> &items) {
             } else
                 ++skip;
         }
-        std::sort(line.begin(), line.end(), [] (TextItem *a, TextItem *b) {
+        std::sort(line.begin(), line.end(), [](TextItem *a, TextItem *b) {
             return a->pos().x() < b->pos().x();
         });
         while (!line.empty()) {
@@ -71,7 +111,7 @@ TextItemWidget::TextItemWidget() : QPushButton() {
     proxy_->setWidget(this);
     proxy_->setMinimumSize(0, 0);
 
-    setStyleSheet("border: 4px solid rgb(0, 0, 255); background: rgba(0, 0, 0, 0)");
+    setStyleSheet("border: 2px solid rgb(0, 0, 255); background: rgba(0, 0, 0, 0)");
 
     proxy_->setFlag(QGraphicsProxyWidget::GraphicsItemFlag::ItemIsSelectable);
 //    proxy_->setFlag(QGraphicsProxyWidget::GraphicsItemFlag::ItemIsMovable);
@@ -85,7 +125,7 @@ TextItemWidget::TextItemWidget(TextItem *textItem) : TextItemWidget() {
 void TextItemWidget::refresh() {
     if (item_) {
         setGeometry(item_->rect());
-        setText(item_->text());
+//        setText(item_->text());
     }
 }
 
@@ -134,36 +174,3 @@ void TextItemWidget::mouseReleaseEvent(QMouseEvent *ev) {
         QPushButton::mouseReleaseEvent(ev);
     m_press = false;
 }
-
-
-////////////////////
-
-/*
-void ConnectedTextItem::setWidget(TextItemWidget *newWidget) {
-    if (widget_) widget_->setItem(nullptr);
-    widget_ = newWidget;
-    if (widget_) widget_->refresh();
-}
-
-void ConnectedTextItem::setListItem(TextListItem *newListItem) {
-    if (listItem_) listItem_->setItem(nullptr);
-    listItem_ = newListItem;
-    if (listItem_) listItem_->refresh();
-}
-
-void ConnectedTextItem::update() {
-    TextItem::update();
-    if (widget_)
-        widget_->refresh();
-    if (listItem_)
-        listItem_->refresh();
-}
-
-void ConnectedTextItem::remove() {
-    if (listItem_)
-        listItem_->deleteLater();
-    if (widget_)
-        widget_->deleteLater();
-    TextItem::remove();
-}
-*/

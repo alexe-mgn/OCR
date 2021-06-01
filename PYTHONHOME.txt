@@ -1,0 +1,7 @@
+python
+First line of this file must contain path to python home directory.
+Development version: 3.9.5
+Default is: python
+which is directory next to executable,
+where interpreter may be distributed.
+All other lines are ignored.

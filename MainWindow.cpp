@@ -84,6 +84,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     }
 }
 
+MainWindow::~MainWindow() {
+
+}
+
 void MainWindow::connectTab(Tab *tab) {
     tabBar->addTab(tab->windowTitle());
     stack->addWidget(tab);

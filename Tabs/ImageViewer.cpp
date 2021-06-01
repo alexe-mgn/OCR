@@ -73,6 +73,8 @@ ImageViewer::ImageViewer(MainWindow *mainWindow, QWidget *parent) : Tab(mainWind
     infoPanel = new IVInfoPanel(this);
     dataListPanel = new IVDataListPanel(this);
     dataViewPanel = new IVDataViewPanel(this);
+
+    ImageCR::init();
 }
 
 ImageViewer::~ImageViewer() {
@@ -211,12 +213,9 @@ void ImageViewer::removeItem(TextItem *textItem) {
 int ImageViewer::itemsCount() { return items.size(); }
 
 void ImageViewer::scan() {
-    if (hasImage()) {
-        ImageCR cr;
-        cr.scan(imageView->image());
-        for (TextItem *item : cr.items)
+    if (hasImage())
+        for (TextItem *item : ImageCR::scan(imageView->image()))
             addItem(item);
-    }
 }
 
 void ImageViewer::imageSelectionChanged() {
