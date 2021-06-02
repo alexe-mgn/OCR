@@ -76,7 +76,8 @@ file(TO_CMAKE_PATH "${CMAKE_PREFIX_PATH}" CMAKE_PREFIX_PATH)
 include(cmake/init_install.cmake)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION ${INSTALL_DESTINATION})
-install(FILES Readme.txt PYTHONHOME.txt DESTINATION ${INSTALL_DESTINATION})
+install(FILES Readme.txt PYTHONHOME.txt recognition/requirements.txt DESTINATION ${INSTALL_DESTINATION})
+install(DIRECTORY recognition DESTINATION ${INSTALL_DESTINATION})
 
 install(CODE "set(QT_PLUGINS ${QT_PLUGINS})")
 install(CODE [[

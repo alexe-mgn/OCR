@@ -42,7 +42,8 @@ void TextListItem::setIndex(int index) {
 
 DataListPanel::DataListPanel(QWidget *parent) : QWidget(parent) {
     setupUi(this);
-    connect(this->createButton, &QPushButton::clicked, this, &DataListPanel::createItem);
+    connect(this->addButton, &QPushButton::clicked, this, &DataListPanel::createItem);
+    connect(this->sortButton, &QPushButton::clicked, this, &DataListPanel::sortItems);
     connect(this, &DataListPanel::itemRemoveClicked, this, &DataListPanel::removeItem);
 }
 
@@ -56,6 +57,20 @@ TextListItem *DataListPanel::widget(TextItem *textItem) {
 
 bool DataListPanel::isCreationAvailable() const { return creationAvailable; }
 
+void DataListPanel::sortItems() {
+    QList<TextItem *> textItems;
+    for (TextListItem *listItem : listItems)
+        textItems.append(listItem->item());
+    QList<QList<TextItem *>> lines = joinLines(textItems);
+
+    int i = 0;
+    while (!lines.empty()) {
+        QList<TextItem *> line = lines.takeFirst();
+        while (!line.empty())
+            listItems[i++]->setItem(line.takeFirst());
+    }
+}
+
 void DataListPanel::connectListItem(TextListItem *listItem) {
     connect(listItem, &TextListItem::clicked, this, &DataListPanel::emitSenderClicked);
     connect(listItem, &TextListItem::removeClicked, this, &DataListPanel::emitSenderRemoveClicked);
@@ -64,7 +79,7 @@ void DataListPanel::connectListItem(TextListItem *listItem) {
 void DataListPanel::addItem(TextItem *textItem) {
     auto listItem = new TextListItem(textItem);
     listItems.append(listItem);
-    itemsLayout->insertWidget(itemsLayout->indexOf(createButton), listItem);
+    itemsLayout->insertWidget(itemsLayout->indexOf(verticalSpacer), listItem);
     listItem->setIndex(listItems.size());
     connectListItem(listItem);
     emit itemAdded(textItem);
@@ -82,6 +97,7 @@ TextItem *DataListPanel::createItem() {
 
 void DataListPanel::removeItem(TextItem *textItem) {
     TextListItem *listItem = widget(textItem);
+    listItem->deleteButton->setDisabled(true);
     itemsLayout->removeWidget(listItem);
     listItems.removeOne(listItem);
     listItem->deleteLater();
@@ -102,7 +118,7 @@ void DataListPanel::clear() {
 
 void DataListPanel::setCreationAvailable(bool enabled) {
     creationAvailable = enabled;
-    createButton->setVisible(enabled);
+    addButton->setVisible(enabled);
 }
 
 void DataListPanel::emitSenderClicked() {

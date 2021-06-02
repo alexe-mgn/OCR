@@ -78,10 +78,10 @@ ImageViewer::ImageViewer(MainWindow *mainWindow, QWidget *parent) : Tab(mainWind
 }
 
 ImageViewer::~ImageViewer() {
+//    for (auto w : QList<QWidget *>{infoPanel, dataListPanel, dataViewPanel})
+//        if (w) w->deleteLater();
     while (!items.empty())
         delete items.takeLast();
-    for (auto w : QList<QWidget *>{infoPanel, dataListPanel, dataViewPanel})
-        w->deleteLater();
 }
 
 QList<QWidget *> ImageViewer::getPanels() {
@@ -216,6 +216,7 @@ void ImageViewer::scan() {
     if (hasImage())
         for (TextItem *item : ImageCR::scan(imageView->image()))
             addItem(item);
+    dataListPanel->sortItems();
 }
 
 void ImageViewer::imageSelectionChanged() {

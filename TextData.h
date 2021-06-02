@@ -67,6 +67,8 @@ protected:
 
 QList<TextItem *> joinLetters(QList<TextItem *> letters);
 
+QList<QList<TextItem *>> joinLines(const QList<TextItem *> &items);
+
 QString itemsToCSV(const QList<TextItem *> &items);
 
 QString itemsToText(const QList<TextItem *> &items);

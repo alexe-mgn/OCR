@@ -46,27 +46,8 @@ QList<TextItem *> joinLetters(QList<TextItem *> letters) {
     return words;
 }
 
-
-QString itemsToCSV(const QList<TextItem *> &items) {
-    char d = ',';
-    char n = '\n';
-    QString csv;
-    QTextStream stream(&csv);
-    stream << QList<QString>{"x", "y", "width", "height", "text"}.join(d) << n;
-    for (TextItem *item : items) {
-        stream << item->pos().x()
-               << d << item->pos().y()
-               << d << item->size().width()
-               << d << item->size().height()
-               << d << item->text()
-               << n;
-    }
-    return csv;
-}
-
-QString itemsToText(const QList<TextItem *> &items) {
-    QString text;
-    QTextStream stream(&text);
+QList<QList<TextItem *>> joinLines(const QList<TextItem *> &items) {
+    QList<QList<TextItem *>> lines;
     QList<TextItem *> sItems = items;
     std::sort(sItems.begin(), sItems.end(), [](TextItem *a, TextItem *b) {
         return a->pos().y() < b->pos().y();
@@ -91,10 +72,40 @@ QString itemsToText(const QList<TextItem *> &items) {
         std::sort(line.begin(), line.end(), [](TextItem *a, TextItem *b) {
             return a->pos().x() < b->pos().x();
         });
+        lines.append(line);
+    }
+    return lines;
+}
+
+QString itemsToCSV(const QList<TextItem *> &items) {
+    char d = ',';
+    char n = '\n';
+    QString csv;
+    QTextStream stream(&csv);
+    stream << QList<QString>{"x", "y", "width", "height", "text"}.join(d) << n;
+    for (TextItem *item : items) {
+        stream << item->pos().x()
+               << d << item->pos().y()
+               << d << item->size().width()
+               << d << item->size().height()
+               << d << item->text()
+               << n;
+    }
+    return csv;
+}
+
+QString itemsToText(const QList<TextItem *> &items) {
+    QString text;
+    QTextStream stream(&text);
+    QList<QList<TextItem *>> lines = joinLines(items);
+    while (!lines.empty()) {
+        int n = 0;
+        QList<TextItem *> line = lines.takeFirst();
         while (!line.empty()) {
             stream << line.takeFirst()->text();
             if (!line.empty())
                 stream << ' ';
+            ++n;
         }
         if (n > 0)
             stream << '\n';

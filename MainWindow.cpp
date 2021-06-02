@@ -84,10 +84,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     }
 }
 
-MainWindow::~MainWindow() {
-
-}
-
 void MainWindow::connectTab(Tab *tab) {
     tabBar->addTab(tab->windowTitle());
     stack->addWidget(tab);
@@ -181,6 +177,11 @@ void MainWindow::closeTab(int index) {
         for (auto &dock : panelDockWidgets)
             dock->removeTab(tab);
     w->deleteLater();
+}
+
+void MainWindow::closeAll() {
+    while (stack->count())
+        closeTab(0);
 }
 
 void MainWindow::moveTab(int from, int to) {

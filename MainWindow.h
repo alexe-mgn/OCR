@@ -21,8 +21,6 @@ Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = nullptr);
 
-    ~MainWindow();
-
     QTabBar *tabBar;
     QStackedWidget *stack;
     HomeTab *homeTab;
@@ -45,6 +43,8 @@ public:
     void openCamera();
 
     void closeTab(int index);
+
+    void closeAll();
 
     [[nodiscard]] Tab *currentTab() const;
 

@@ -59,6 +59,8 @@ public:
 
 public slots:
 
+    virtual void sortItems();
+
     virtual void addItem(TextItem *textItem);
 
     virtual void refreshItem(TextItem *textItem);
