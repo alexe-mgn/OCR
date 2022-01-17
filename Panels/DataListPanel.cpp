@@ -59,7 +59,7 @@ bool DataListPanel::isCreationAvailable() const { return creationAvailable; }
 
 void DataListPanel::sortItems() {
     QList<TextItem *> textItems;
-    for (TextListItem *listItem : listItems)
+    for (TextListItem *listItem: listItems)
         textItems.append(listItem->item());
     QList<QList<TextItem *>> lines = joinLines(textItems);
 
@@ -107,7 +107,7 @@ void DataListPanel::removeItem(TextItem *textItem) {
 
 void DataListPanel::reindex() {
     int ind = 0;
-    for (auto i : listItems)
+    for (auto i: listItems)
         i->setIndex(++ind);
 }
 

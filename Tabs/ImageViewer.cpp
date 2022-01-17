@@ -214,7 +214,7 @@ int ImageViewer::itemsCount() { return items.size(); }
 
 void ImageViewer::scan() {
     if (hasImage())
-        for (TextItem *item : ImageCR::scan(imageView->image()))
+        for (TextItem *item: ImageCR::scan(imageView->image()))
             addItem(item);
     dataListPanel->sortItems();
 }
@@ -223,7 +223,7 @@ void ImageViewer::imageSelectionChanged() {
     if (imageView->scene()->selectedItems().empty())
         return;
     QList<TextItem *> selectedItems;
-    for (QGraphicsItem *graphicsItem : imageView->scene()->selectedItems()) {
+    for (QGraphicsItem *graphicsItem: imageView->scene()->selectedItems()) {
         QGraphicsProxyWidget *proxy;
         TextItemWidget *itemWidget;
         if ((proxy = dynamic_cast<QGraphicsProxyWidget *>(graphicsItem)) &&

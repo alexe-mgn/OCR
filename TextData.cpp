@@ -83,7 +83,7 @@ QString itemsToCSV(const QList<TextItem *> &items) {
     QString csv;
     QTextStream stream(&csv);
     stream << QList<QString>{"x", "y", "width", "height", "text"}.join(d) << n;
-    for (TextItem *item : items) {
+    for (TextItem *item: items) {
         stream << item->pos().x()
                << d << item->pos().y()
                << d << item->size().width()

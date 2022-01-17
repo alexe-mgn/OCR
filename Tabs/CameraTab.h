@@ -29,6 +29,7 @@ using ImageCapture = QCameraImageCapture;
 #include <QtMultimedia/QCameraDevice>
 #include <QtMultimedia/QImageCapture>
 #include <QtMultimedia/QMediaCaptureSession>
+
 using ImageCapture = QImageCapture;
 
 #endif
