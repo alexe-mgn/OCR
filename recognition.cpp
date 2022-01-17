@@ -1,7 +1,6 @@
 #include <Python.h>
 
-#include <exception>
-#include <unistd.h>
+#include <stdexcept>
 
 #include <QtCore/QByteArray>
 #include <QtCore/QBuffer>
@@ -27,8 +26,10 @@ QString pyTracebackMessage() {
             PyObject *args = PyTuple_New(3);
             {
                 int n = 0;
-                PyObject *perr = PyObject_CallOneArg(ptype, pvalue != nullptr ? pvalue : Py_None);
-                for (PyObject *i : {ptype, perr, ptraceback}) {
+                PyObject *perr = PyObject_CallOneArg(ptype,
+                                                     pvalue != nullptr ? pvalue
+                                                                       : Py_None);
+                for (PyObject *i: {ptype, perr, ptraceback}) {
                     Py_XINCREF(i);
                     PyTuple_SetItem(args, n++, i != nullptr ? i : Py_None);
                 }
@@ -45,8 +46,9 @@ QString pyTracebackMessage() {
                 PySequence_DelItem(lines, 0);
             }
             Py_XDECREF(lines);
+            Py_XDECREF(tb_format);
         } else {
-            for (PyObject *i : {ptype, pvalue, ptraceback}) {
+            for (PyObject *i: {ptype, pvalue, ptraceback}) {
                 if (i != nullptr) {
                     PyObject *i_str = PyObject_Str(i);
                     if (i_str != nullptr) {
@@ -57,12 +59,11 @@ QString pyTracebackMessage() {
                 }
             }
         }
-        Py_XDECREF(tb_format);
 
         PyErr_Restore(ptype, pvalue, ptraceback);
-        Py_XDECREF(ptype);
-        Py_XDECREF(pvalue);
-        Py_XDECREF(ptraceback);
+//        Py_XDECREF(ptype);
+//        Py_XDECREF(pvalue);
+//        Py_XDECREF(ptraceback);
     }
     return msg;
 }
@@ -88,17 +89,18 @@ void ImageCR::init() {
         rec_f = PyObject_GetAttrString(rec, "bytes_predict_letters");
         if (rec_f == nullptr || PyErr_Occurred()) {
             QString msg = pyTracebackMessage();
-            msg.insert(0, "Could not import recognition function from python module.\n");
+            msg.insert(0,
+                       "Could not import recognition function from python module.\n");
             throw std::runtime_error(msg.toStdString());
         }
 
-        Py_DECREF(rec);
+        // Py_XDECREF(rec_f) IN finalize()
+        Py_XDECREF(rec);
     }
 }
 
 void ImageCR::finalize() {
-    if (rec_f != nullptr)
-        Py_DECREF(rec_f);
+    Py_XDECREF(rec_f);
     Py_Finalize();
 }
 
@@ -111,13 +113,15 @@ QList<TextItem *> ImageCR::scan(const QImage &image) {
     image.save(&buff, "JPG");
     buff.close();
     // Transfer to python
-    PyObject *p_img_bytes = PyBytes_FromStringAndSize(q_img_bytes.constData(), q_img_bytes.size());
+    PyObject *p_img_bytes = PyBytes_FromStringAndSize(q_img_bytes.constData(),
+                                                      q_img_bytes.size());
     if (p_img_bytes == nullptr || PyErr_Occurred()) {
         QString msg = pyTracebackMessage();
         msg.insert(0, "Python image conversion error.\n");
         throw std::runtime_error(msg.toStdString());
     }
-    PyObject *items = PyObject_CallOneArg(static_cast<PyObject *>(rec_f), p_img_bytes);
+    PyObject *items = PyObject_CallOneArg(static_cast<PyObject *>(rec_f),
+                                          p_img_bytes);
     if (items == nullptr || PyErr_Occurred()) {
         QString msg = pyTracebackMessage();
         msg.insert(0, "Python recognition error.\n");

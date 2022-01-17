@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.15)
 project(OCR)
 
 option(INSTALL_PYTHON_LIBRARIES "Distribute required python site-packages" ON)
+# cmake INSTALL should be executed after build
+# python should contain embedded interpreter with all requirements (recognition/requirements.txt) installed
 
 
 # CMAKE

@@ -35,7 +35,8 @@ bool PanelContainer::setCurrentTab(Tab *newTab) {
 }
 
 void PanelContainer::removeTab(Tab *tab) {
-    removeWidget(tabWidgets_[tab]);
+    if (tabWidgets_[tab])
+        removeWidget(tabWidgets_[tab]);
     tabWidgets_.remove(tab);
 //    tab->setParent(nullptr);
     if (!tabWidgets_.empty())

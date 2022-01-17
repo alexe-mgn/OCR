@@ -80,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     const QStringList sp = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
     fileLastPath = sp.empty() ? QDir::current() : sp.last();
 
-    for (QMainWindow *&window : this->findChildren<QMainWindow *>()) {
+    for (QMainWindow *&window: this->findChildren<QMainWindow *>()) {
         window->setWindowFlags(Qt::Widget);
     }
 }
@@ -121,7 +121,7 @@ void MainWindow::chooseOpenFile() {
     QMimeDatabase mimeDB;
     QStringList mimeFilters;
     QStringList nameFilter;
-    for (const QByteArray &mimeTypeFilter : QImageReader::supportedMimeTypes()) {
+    for (const QByteArray &mimeTypeFilter: QImageReader::supportedMimeTypes()) {
         QMimeType mimeType = mimeDB.mimeTypeForName(mimeTypeFilter);
         if (mimeType.isValid()) {
             mimeFilters.append(mimeTypeFilter);
@@ -156,7 +156,7 @@ void MainWindow::openCamera() {
     if (i >= stack->count()) {
         addTab(new CameraTab(this));
     }
-    setCurrentIndex(i);
+//    setCurrentIndex(i);
 }
 
 Tab *MainWindow::currentTab() const {
@@ -166,17 +166,17 @@ Tab *MainWindow::currentTab() const {
 void MainWindow::setCurrentIndex(int index) {
     tabBar->setCurrentIndex(index);
     stack->setCurrentIndex(index);
-    for (auto &dock : panelDockWidgets)
+    for (auto &dock: panelDockWidgets)
         dock->setCurrentTab(currentTab());
 }
 
 void MainWindow::closeTab(int index) {
-    tabBar->removeTab(index);
     QWidget *w = stack->widget(index);
     stack->removeWidget(w);
     if (auto tab = dynamic_cast<Tab *>(w))
-        for (auto &dock : panelDockWidgets)
+        for (auto &dock: panelDockWidgets)
             dock->removeTab(tab);
+    tabBar->removeTab(index);
     w->deleteLater();
 }
 
