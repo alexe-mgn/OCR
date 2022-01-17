@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 project(OCR)
 
+option(INSTALL_PYTHON_LIBRARIES "Distribute required python site-packages" ON)
+
+
 # CMAKE
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -9,29 +12,40 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 
 # Qt
-set(QT_VERSION 5)
+set(QT_VERSION 0)
+find_package(Qt6 COMPONENTS Widgets QUIET)
+if (Qt6_FOUND)
+    set(QT_VERSION 6)
+else ()
+    find_package(Qt5 COMPONENTS Widgets QUIET)
+    if (Qt5_FOUND)
+        set(QT_VERSION 5)
+    endif ()
+endif ()
+
+if (QT_VERSION MATCHES 0)
+    find_package(Qt6)
+    find_package(Qt5)
+    message(FATAL_ERROR "Satisfying Qt version (6 or 5) is not found")
+endif ()
+
 set(QT_LIB Qt${QT_VERSION})
 set(QT_COMPONENTS Widgets Multimedia MultimediaWidgets)
 set(QT_LIBS ${QT_COMPONENTS})
 LIST(TRANSFORM QT_LIBS PREPEND ${QT_LIB}::)
 
-if (CMAKE_BUILD_TYPE MATCHES "Debug")
-    string(TOLOWER "platforms/q${CMAKE_SYSTEM_NAME}d${CMAKE_SHARED_LIBRARY_SUFFIX}" QT_PLUGINS)
-else ()
-    string(TOLOWER "platforms/q${CMAKE_SYSTEM_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}" QT_PLUGINS)
-endif ()
-
 find_package(${QT_LIB} COMPONENTS ${QT_COMPONENTS} REQUIRED)
+message(STATUS "Found ${QT_LIB}")
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOUIC_SEARCH_PATHS UI)
 set(CMAKE_AUTORCC ON)
 
+
 # Python
 find_package(Python COMPONENTS Interpreter Development REQUIRED)
-find_package(PythonLibs REQUIRED)
-include_directories(${PYTHON_INCLUDE_DIRS})
+include_directories(${Python_INCLUDE_DIRS})
 
 
 # Targeting
@@ -66,59 +80,36 @@ if (CMAKE_BUILD_TYPE MATCHES "Debug")
 else ()
     add_executable(${PROJECT_NAME} WIN32 ${SOURCES})
 endif ()
-target_link_libraries(${PROJECT_NAME} ${QT_LIBS} ${PYTHON_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${QT_LIBS} ${Python_LIBRARIES})
+
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/Version.txt "Project library versions
+Qt:\t${${QT_LIB}_VERSION}
+Python:\t${Python_VERSION}
+")
+
 
 # Installation
 set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR})
-set(INSTALL_DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 file(TO_CMAKE_PATH "${CMAKE_PREFIX_PATH}" CMAKE_PREFIX_PATH)
-include(cmake/init_install.cmake)
 
-install(TARGETS ${PROJECT_NAME} DESTINATION ${INSTALL_DESTINATION})
-install(FILES Readme.txt PYTHONHOME.txt recognition/requirements.txt DESTINATION ${INSTALL_DESTINATION})
-install(DIRECTORY recognition DESTINATION ${INSTALL_DESTINATION})
+install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(FILES README.md ${CMAKE_CURRENT_BINARY_DIR}/Version.txt recognition/requirements.txt DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(DIRECTORY python/ DESTINATION ${CMAKE_INSTALL_PREFIX} PATTERN Lib EXCLUDE PATTERN Scripts EXCLUDE)
+if (INSTALL_PYTHON_LIBRARIES)
+    install(DIRECTORY python/Lib python/Scripts DESTINATION ${CMAKE_INSTALL_PREFIX})
+endif ()
+install(DIRECTORY recognition DESTINATION ${CMAKE_INSTALL_PREFIX})
 
-install(CODE "set(QT_PLUGINS ${QT_PLUGINS})")
-install(CODE [[
-foreach(_f IN LISTS QT_PLUGINS)
-    unset(_fp CACHE)
-    find_file(_fp "${_f}"
-        PATHS ${CMAKE_PREFIX_PATH}
-        PATH_SUFFIXES plugins
-    )
-    get_filename_component(_f ${_f} DIRECTORY)
-    if (NOT _fp MATCHES "_fp-NOTFOUND")
-        file(INSTALL ${_fp} DESTINATION ${INSTALL_DESTINATION}/${_f})
-    endif()
-endforeach()
-]])
-install(CODE [[
-unset(_dp CACHE)
-find_path(_dp imageformats
-    PATHS ${CMAKE_PREFIX_PATH}
-    PATH_SUFFIXES plugins
-)
-if (NOT _dp MATCHES "_dp-NOTFOUND")
-    file(INSTALL ${_dp}/imageformats DESTINATION ${INSTALL_DESTINATION})
-endif()
-]])
-install(CODE [[
-unset(_dp CACHE)
-find_path(_dp mediaservice
-    PATHS ${CMAKE_PREFIX_PATH}
-    PATH_SUFFIXES plugins
-)
-if (NOT _dp MATCHES "_dp-NOTFOUND")
-    file(INSTALL ${_dp}/mediaservice DESTINATION ${INSTALL_DESTINATION})
-else()
-    message("Could not find mediaservice plugins, camera services might not work properly.")
-endif()
-]])
+find_file(WINDEPLOYQT windeployqt.exe PATHS ${CMAKE_INSTALL_PREFIX} ${QT${QT_VERSION}_INSTALL_PREFIX} PATH_SUFFIXES bin)
+if (NOT DEFINED WINDEPLOYQT OR WINDEPLOYQT MATCHES "WINDEPLOYQT-NOTFOUND" OR NOT EXISTS ${WINDEPLOYQT})
+    message(WARNING "windeployqt is not found: \"${WINDEPLOYQT}\"")
+endif ()
 
-install(SCRIPT cmake/install.cmake)
+install(CODE "execute_process(COMMAND ${WINDEPLOYQT} ${CMAKE_INSTALL_PREFIX})")
 
-
-#add_custom_command(TARGET ${PROJECT_NAME}
-#        PRE_BUILD COMMAND ${CMAKE_COMMAND} -E
-#        copy_directory ${CMAKE_BINARY_DIR}/${PROJECT_NAME}_autogen/include ${CMAKE_SOURCE_DIR})
+#get_cmake_property(_variableNames VARIABLES)
+#list (SORT _variableNames)
+#foreach (_variableName ${_variableNames})
+#    message("${_variableName}=${${_variableName}}")
+#endforeach()

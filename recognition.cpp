@@ -6,7 +6,6 @@
 #include <QtCore/QByteArray>
 #include <QtCore/QBuffer>
 #include <QtCore/QRect>
-#include <QtCore/QRegExp>
 
 #include "recognition.h"
 
@@ -70,29 +69,16 @@ QString pyTracebackMessage() {
 
 void *ImageCR::rec_f = nullptr;
 
-QString ImageCR::getPythonHome() {
-    QString path = "python";
-    QFile ph_file("PYTHONHOME.txt");
-    if (ph_file.open(QFile::ReadOnly)) {
-        path = ph_file.readLine();
-        path.remove(QRegExp("[\\n\\r]{1,2}$"));
-    }
-    ph_file.close();
-    return path;
-}
-
 void ImageCR::init() {
     if (rec_f == nullptr || !Py_IsInitialized()) {
         if (!Py_IsInitialized()) {
-            Py_SetPythonHome(ImageCR::getPythonHome().toStdWString().c_str());
             Py_Initialize();
         }
 
         // REFERENCE LEAK
         PyImport_ImportModule("traceback");
 
-//        PyRun_SimpleString("import sys\nsys.path.append('../..')\n");
-//        PyRun_SimpleString("import os\nimport sys\nprint(os.getcwd())\nprint(sys.path)\n");
+//        PyRun_SimpleString("import os\nimport sys\nprint(os.getcwd())\nprint(sys.path)\nprint(help('modules'))\n");
         PyObject *rec = PyImport_ImportModule("recognition");
         if (rec == nullptr || PyErr_Occurred()) {
             QString msg = pyTracebackMessage();

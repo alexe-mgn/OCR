@@ -1,2 +1,5 @@
-The app requires python~3.9 interpreter (see PYTHONHOME.txt)
-with modules from requirements.txt installed.
+Simple Qt GUI for OCR app.
+
+Uses embedded python with silly recognition model.  
+Installation directory should contain python Lib (and Scripts) directory
+with installed libraries (requirements.txt) for corresponding python version (Version.txt)
