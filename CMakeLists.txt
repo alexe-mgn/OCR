@@ -3,7 +3,7 @@ project(OCR)
 
 option(INSTALL_PYTHON_LIBRARIES "Distribute required python site-packages" ON)
 # cmake INSTALL should be executed after build
-# python should contain embedded interpreter with all requirements (recognition/requirements.txt) installed
+# /python should contain embedded interpreter with all requirements (recognition/requirements.txt) installed
 
 
 # CMAKE
@@ -84,7 +84,10 @@ else ()
 endif ()
 target_link_libraries(${PROJECT_NAME} ${QT_LIBS} ${Python_LIBRARIES})
 
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/Version.txt "Project library versions
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/Version.txt "Compiler:
+${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_ARCHITECTURE_ID} ${CMAKE_CXX_COMPILER_VERSION}
+
+Project library versions
 Qt:\t${${QT_LIB}_VERSION}
 Python:\t${Python_VERSION}
 ")
