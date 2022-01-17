@@ -57,12 +57,12 @@ void ImageView::zoomOut(double coef) {
 
 void ImageView::wheelEvent(QWheelEvent *event) {
 //    QGraphicsView::wheelEvent(event);
-    QPointF sp = mapToScene(event->pos());
+    QPointF sp = mapToScene(event->position().toPoint());
     if (event->angleDelta().y() >= 0)
         zoomIn();
     else
         zoomOut();
-    centerOn(mapToScene(viewport()->rect().center()) + sp - mapToScene(event->pos()));
+    centerOn(mapToScene(viewport()->rect().center()) + sp - mapToScene(event->position().toPoint()));
 }
 
 void ImageView::keyPressEvent(QKeyEvent *event) {

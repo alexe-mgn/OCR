@@ -5,10 +5,11 @@
 #include <QtCore/QMimeType>
 #include <QtCore/QMimeDatabase>
 
+#include <QAction>
+
 #include <QtGui/QImage>
 #include <QtGui/QImageReader>
 
-#include <QtWidgets/QAction>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QFileDialog>
